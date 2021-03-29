@@ -57,7 +57,7 @@ if __name__ == '__main__':
                 print(len(distance_list))
                 ser.write(data)
             else:
-                print("TEST OVER!")
+                print("TEST OVER!!")
         else:
             print(row_list[-1])
     
