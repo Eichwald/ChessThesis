@@ -16,10 +16,13 @@ class App(threading.Thread):
       self.gui = GUI(self.bc)
       threading.Thread.__init__(self)
       self.start()
-
-      while True:
-         # self.sc.run()
-         self.gui.start()
+      try:
+         while True:
+            # self.sc.run()
+            self.gui.start()
+      except KeyboardInterrupt:
+         self.sc.closeSer()
+         print("Bye Bye")
 
    def run(self):
       print("running")

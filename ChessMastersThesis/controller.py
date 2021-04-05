@@ -54,6 +54,9 @@ class Controller():
 
     def setLed(self, square, attackable):
         self.servo.setLed(square, attackable)
+
+    def send_led_string(self, send_string):
+        self.servo.send_led_string(send_string)
         
     def _lift(self, color, piece, fromSquare):
         self.lifting = {
@@ -68,3 +71,5 @@ class Controller():
         self.board.clearForces()
 
         self.lifting = None
+
+   

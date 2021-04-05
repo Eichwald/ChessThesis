@@ -21,7 +21,6 @@ class BoardController():
 
         self.controller = controller
 
-
         self.engine = Engine()
         self.board = None
         self.selector = None
@@ -30,8 +29,6 @@ class BoardController():
         self.selector_selected_color = None
 
         self.board_selected_square = None
-
-
 
         self.board_data = {
             Square.A1: None,
@@ -133,6 +130,7 @@ class BoardController():
             self.selector_selected_color = None
             self.selector_selected_piece = None
             self.selector.demark(self.selector_selected_piece, self.selector_selected_color)
+            
             return
 
         self.selector_selected_color = color
@@ -142,7 +140,7 @@ class BoardController():
     # marking a piece on the board
     def mark(self, square: Square):
         self.board.mark(square)
-
+        
         if self.board_data[square] != None:
             self.applyForces(square)
 
@@ -153,11 +151,34 @@ class BoardController():
         evaluation = self.stockfish.get_evaluation()
         if self.stockfish.is_move_correct(full_string) is True:
             self.stockfish.makeMove(full_string)
+            occupied, color, piece = self.get(fromSquare)
+            self.board.demark(fromSquare)
+            self.clear(fromSquare)
+            self.place(piece, color, toSquare)
+            if "e1" in from_string or "e8" in from_string:
+                if "c1" in to_string:
+                    occupied, color, piece = self.get(Square.A1)
+                    self.clear(Square.A1)
+                    self.place(piece, color, Square.D1)
+                if "g1" in to_string:
+                    occupied, color, piece = self.get(Square.H1)
+                    self.clear(Square.H1)
+                    self.place(piece, color, Square.F1)
+                if "c8" in to_string:
+                    occupied, color, piece = self.get(Square.A8)
+                    self.clear(Square.A8)
+                    self.place(piece, color, Square.D8)
+                if "g8" in to_string:
+                    occupied, color, piece = self.get(Square.H8)
+                    self.clear(Square.H8)
+                    self.place(piece, color, Square.F8)
         else:
             print("not a valid move")
-            print("witt is cool")
             self.board.demark(fromSquare)
-            returnd
+            return
+
+        # TODO: Check for castle
+        # TODO: Move both king and rook for castle
 
         # check for check-mate
         new_evaluation = self.stockfish.get_evaluation()
@@ -172,12 +193,6 @@ class BoardController():
         if new_evaluation['type'] is'mate' and new_evaluation['value'] < 4:
         	print(new_evaluation)
         	print("mate in" + new_evaluation["value"])
-
-        #Dont know if i need this yet
-        occupied, color, piece = self.get(fromSquare)
-        self.board.demark(fromSquare)
-        self.clear(fromSquare)
-        self.place(piece, color, toSquare)
 
 
     def board_clicked(self, square: Square):
@@ -199,9 +214,9 @@ class BoardController():
         if (self.board_selected_square == square):
             self.board.demark(self.board_selected_square)
             self.board_selected_square = None
-            
             if self.board_data[square] != None:
                 self.clearForces()
+                self.controller.send_led_string('<00000000000000000000000000000000000000000000000000000000000000000>')
             return
 
         # if moving selection
@@ -210,11 +225,13 @@ class BoardController():
             self.board.mark(square)
             self.board_selected_square = square
             self.clearForces()
+            self.controller.send_led_string('<00000000000000000000000000000000000000000000000000000000000000000>')
             return
         
         # if performing a move
         self.move(self.board_selected_square, square) 
         self.board_selected_square = None
+        self.controller.send_led_string('<00000000000000000000000000000000000000000000000000000000000000000>')
         self.clearForces()
 
     def applyForces(self, fromSquare: Square, onlyOnSqaure: Square = None):
@@ -222,11 +239,13 @@ class BoardController():
         best_moves = []
         new_best_move = self.stockfish.get_best_move()
         best_moves.append(new_best_move)
+        led_string = []
+        led_squares = []
+            
+        for moves in move_to_squares:
+            led_squares.append(re.findall(r'..', moves)[1])
 
         def led(square):
-            led_squares = []
-            for moves in move_to_squares:
-                led_squares.append(re.findall(r'..', moves)[1])
             return True if square.name.lower() in led_squares else False
 
         def force(square):
@@ -250,24 +269,29 @@ class BoardController():
             else:
                 return Force.neutral
 
-
-	        # TODO:
-	        # CHECK HOW FAST WE CAN GET EVAL FOR ALL 64 SQUARES (Maybe only for possible moves with current piece)        
-	        # CHECK FOR BLUNDERS
-	        # CHECK FOR MATES
+        def send_string():
+            for square in Square:
+                if square.name.lower() in led_squares:
+                    led_string.append("1")
+                else:
+                    led_string.append("0")
+            print(f'<0{"".join(led_string)}>')
+            return f'<0{"".join(led_string)}>'
 
 
         if onlyOnSqaure == None:
             for square in Square:
                 self.board.setForce(square, force(square))
-                #self.controller.setForce(square, force(square))
+                self.controller.setForce(square, force(square))
                 self.board.attackable(led(square), square)
-                #self.controller.setLed(square, led(square))
+                self.controller.setLed(square, led(square))
+            self.controller.send_led_string(send_string())
         else:
             self.board.setForce(onlyOnSqaure, force(onlyOnSqaure))
-            #self.controller.setForce(onlyOnSqaure, force(onlyOnSqaure))
+            self.controller.setForce(onlyOnSqaure, force(onlyOnSqaure))
             self.board.attackable(led(onlyOnSqaure), onlyOnSqaure)
-            #self.controller.setLed(onlyOnSqaure, led(onlyOnSqaure))
+            self.controller.setLed(onlyOnSqaure, led(onlyOnSqaure))
+            self.controller.send_led_string(send_string())
 
     def available_moves(self, square: Square):
         test = []
@@ -278,10 +302,6 @@ class BoardController():
             if self.stockfish.is_move_correct(full_string) is True:
                 test.append(full_string)
         return test
-
-    def check_for_mate(self):
-    	pass
-
     def clearForces(self):
         for square in Square:
             self.board.setForce(square, Force.neutral)
@@ -328,6 +348,7 @@ class BoardController():
             "piece": piece,
             "color": color
         }
+
 
     def clearAll(self):
         for square in Square:

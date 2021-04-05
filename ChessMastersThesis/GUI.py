@@ -47,9 +47,9 @@ class GUI:
       self.board.pack(side = TOP, fill = BOTH, expand = TRUE)
       board_controller.board = self.board
 
-      self.pieceSelector = PieceSelector(self.window, board_controller)
-      self.pieceSelector.pack(side = TOP, fill = BOTH, expand = TRUE)
-      board_controller.selector = self.pieceSelector
+      #self.pieceSelector = PieceSelector(self.window, board_controller)
+      #self.pieceSelector.pack(side = TOP, fill = BOTH, expand = TRUE)
+      #board_controller.selector = self.pieceSelector
 
       controls = Frame(self.window, bg = "gray")
       controls.pack(side = BOTTOM, fill = BOTH, expand = TRUE)
@@ -65,6 +65,8 @@ class GUI:
 
       startPosButton = Button(controls, text = "StartPos", command = self.startPos, bg = "white", fg = "black")
       startPosButton.pack()
+
+      self.startPos()
 
    def clear(self):
       self.board_controller.reset()
