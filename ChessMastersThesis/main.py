@@ -4,6 +4,7 @@ from controller import *
 from board_controller import *
 from servo_controller import *
 import threading
+import time
 
 class App(threading.Thread):
 
@@ -25,7 +26,10 @@ class App(threading.Thread):
          print("Bye Bye")
 
    def run(self):
-      print("running")
+      print("Running")
+
+
+      
        
 
 

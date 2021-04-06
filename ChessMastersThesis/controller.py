@@ -72,4 +72,7 @@ class Controller():
 
         self.lifting = None
 
+    def read_input_arduino(self):
+        return self.servo.read_input_arduino()
+
    
