@@ -22,17 +22,13 @@ int ledBrightness = 100;
 // Creates a MUX74HC4067 instance
 // 1st argument is the Arduino PIN to which the EN pin connects
 // 2nd-5th arguments are the Arduino PINs to which the S0-S3 pins connect
-//SIG pin = pin 3 = digitalPin = digitalRead;
 
-MUX74HC4067 mux(8, 9, 10, 11, 12);
-MUX74HC4067 mux2(26, 28, 30, 32, 34);
-MUX74HC4067 mux3(40, 42, 44, 46, 48);
-MUX74HC4067 mux4(49, 50, 51, 52, 53);
+
+MUX74HC4067 mux(8, A0, A1, A2, A3);
+MUX74HC4067 mux2(26, A5, A6, A7, A8);
 
 byte dataMux;
 byte dataMux2;
-byte dataMux3;
-byte dataMux4;
 
 //============ Side Buttons Code
 
@@ -60,9 +56,9 @@ boolean oldButtonFeedbackState = LOW;
 
 //============
 
-const byte numPieces = 65;
-char boardPieceDetector[numPieces] = {'1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1'};
-//char boardPieceDetector[numPieces] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+const byte numPieces = 33;
+char boardPieceDetector[numPieces] = {'1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'};
+// 65 char boardPieceDetector[numPieces] = {'1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1'};
 void setup()
 {
   Serial.begin(9600);
@@ -70,11 +66,9 @@ void setup()
   Serial.println("<Arduino2 is ready>");
 
   // Configures how the SIG pin will be interfaced
-  // e.g. The SIG pin connects to PIN 13 on the Arduino and PIN 13 is a digital input
-  mux.signalPin(13, INPUT, DIGITAL);
-  mux2.signalPin(36, INPUT, DIGITAL);
-  mux3.signalPin(23, INPUT, DIGITAL);
-  mux4.signalPin(25, INPUT, DIGITAL);
+  // e.g. The SIG pin connects to a ANALOG input
+  mux.signalPin(A4, INPUT, ANALOG);
+  mux2.signalPin(A9, INPUT, ANALOG);
 
   // Button Setup
 
@@ -90,7 +84,7 @@ void loop()
   //pixels.clear(); // Set all pixel colors to 'off'
   pixels.show();  // Send the updated pixel colors to the hardware.
 
-  //readInputPieces();
+  readInputPieces();
   buttonState();
   modeSelector();
   sendToPi();
@@ -98,25 +92,27 @@ void loop()
 
 
 void readInputPieces() {
+
+  int data;
+  int data2;
+
   for (byte i = 0; i < 16; ++i)
   {
     // Reads from channel i and returns HIGH or LOW
     dataMux = mux.read(i);
     dataMux2 = mux2.read(i);
-    dataMux3 = mux3.read(i);
-    dataMux4 = mux4.read(i);
-    boardPieceDetector[i + 1] = dataMux;
-    boardPieceDetector[i + 1 + 16] = dataMux2;
-    boardPieceDetector[i + 1 + 32] = dataMux3;
-    boardPieceDetector[i + 1 + 48] = dataMux4;
-    /*
-      Serial.print("Push button at channel ");
-      Serial.print(i);
-      Serial.print(" is ");
-      Serial.print(currentButtonModeState);
-      if ( dataMux == HIGH ) Serial.println("not pressed");
-      else if ( dataMux == LOW ) Serial.println("pressed");
-    */
+
+    if (dataMux > 205) {
+      boardPieceDetector[i + 1] = '0';
+    }
+
+    if (dataMux2 > 205) {
+      boardPieceDetector[i + 1 + 16] = '0';
+    }
+    else {
+      boardPieceDetector[i + 1] = '1';
+      boardPieceDetector[i + 1 + 16] = '1';
+    }
   }
 }
 
@@ -179,16 +175,16 @@ void modeSelector() {
 
     switch (currentButtonFeedbackState) {
       case 0:
-        boardPieceDetector[0] = 2;
+        boardPieceDetector[0] = '2';
         break;
       case 1:
-        boardPieceDetector[0] = 3;
+        boardPieceDetector[0] = '3';
         break;
       case 2:
-        boardPieceDetector[0] = 4;
+        boardPieceDetector[0] = '4';
         break;
       case 3:
-        boardPieceDetector[0] = 5;
+        boardPieceDetector[0] = '5';
         break;
       default:
         break;
@@ -198,7 +194,7 @@ void modeSelector() {
 
 void sendToPi() {
   Serial.print("<");
-  for (int i = 0; i < 65; i++) {
+  for (int i = 0; i < 33; i++) {
     Serial.print(boardPieceDetector[i]);
   }
   Serial.println(">");

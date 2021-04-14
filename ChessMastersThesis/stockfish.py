@@ -279,4 +279,5 @@ class Stockfish:
 		self.depth = str(depth_value)
 		
 	def __del__(self) -> None:
+		self._put("quit")
 		self.stockfish.kill()

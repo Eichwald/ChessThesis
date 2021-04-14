@@ -143,6 +143,8 @@ class GUI:
       self.board_controller.place(Piece.Q, Color.white, Square.D1)
       self.board_controller.place(Piece.Q, Color.black, Square.D8)
 
+      self.board_controller.new_game()
+
 
    def newmethod(self):
       {

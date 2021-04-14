@@ -5,22 +5,25 @@ from square import *
 from force import *
 from controller import *
 from square_pins import *
-import threading
 
 
-class ServoController(threading.Thread):
+class ServoController():
 
     startMarker = 60
     endMarker = 62
 
     serPort = "/dev/ttyACM0"
     serPort2 = "/dev/ttyUSB0"
+    serPort3 = "/dev/ttyACM1"
     baudRate = 9600
     try:
         ser = serial.Serial(serPort, baudRate)
         ser1 = serial.Serial(serPort2, baudRate)
-        print("Serial port " + serPort + " opened  Baudrate " + str(baudRate))
-        print("Serial port " + serPort2 + " opened  Baudrate " + str(baudRate))
+        ser2 = serial.Serial(serPort3, baudRate)
+        print("Serial port 1 " + serPort + " opened  Baudrate " + str(baudRate))
+        print("Serial port 2 " + serPort2 + " opened  Baudrate " + str(baudRate))
+        print("Serial port 3 " + serPort3 + " opened  Baudrate " + str(baudRate))
+
     except KeyboardInterrupt:
         ser.close()
 
@@ -30,34 +33,18 @@ class ServoController(threading.Thread):
 
         self.squares = square_pins.initialize()
         
-        threading.Thread.__init__(self)
 
-        self.start()
-
-
-    '''def run(self):
-        pass
-        return
-        for square in self.squares:
-            read = GPIO.input(self.squares[square]["pins"]["photoResistor"])
-            isNowOccupied = False if read == 1 else True
-            if isNowOccupied != self.squares[square]["state"]["occupied"]:
-                self.squares[square]["state"]["occupied"] = isNowOccupied
-                if isNowOccupied:
-                    # self.squares[square]["servo"].ChangeDutyCycle(NORTH)
-                    self.controller.board_placed_square(square)
-                else:
-                    # self.squares[square]["servo"].ChangeDutyCycle(SOUTH)
-                    self.controller.board_lifted_square(square)'''
-
-    def run(self):
+    def read_loop(self):
         time.sleep(5)
         while True:
             index = 0
             for square in self.squares:
                 read = self.read_input_arduino()
+                #read = '<01111111111111111000000000000000000000000000000001111111111111111>'
                 read_list = re.findall(r'.', read)
                 index_read = read_list[index + 1]
+                print(index_read)
+                index = index + 1
                 isNowOccupied = False if index_read == 1 else True
                 if isNowOccupied != self.squares[square]["state"]["occupied"]:
                     self.squares[square]["state"]["occupied"] = isNowOccupied
@@ -67,6 +54,25 @@ class ServoController(threading.Thread):
                     else:
                         # self.squares[square]["servo"].ChangeDutyCycle(SOUTH)
                         self.controller.board_lifted_square(square)
+            index = 0
+            
+            '''time.sleep(2)
+            for square in self.squares:
+                # read = self.read_input_arduino()
+                read = '<01111111111111110000000000000000000000000000000001111111111111111>'
+                read_list = re.findall(r'.', read)
+                index_read = read_list[index + 1]
+                print(index_read)
+                index = index + 1
+                isNowOccupied = False if int(index_read) is 1 else True
+                if isNowOccupied != self.squares[square]["state"]["occupied"]:
+                    self.squares[square]["state"]["occupied"] = isNowOccupied
+                    if isNowOccupied:
+                        # self.squares[square]["servo"].ChangeDutyCycle(NORTH)
+                        self.controller.board_placed_square(square)
+                    else:
+                        # self.squares[square]["servo"].ChangeDutyCycle(SOUTH)
+                        self.controller.board_lifted_square(square)'''
 
 
     def setLed(self, square, attackable):
@@ -119,7 +125,9 @@ class ServoController(threading.Thread):
         return(ck)
 
     def read_input_arduino(self):
-        return self.recvFromArduino2()
+        first_part = self.recvFromArduino2()
+        second_part = self.recvFromArduino3()
+        return first_part + second_part
 
     def recvFromArduino2(self):
 
@@ -137,6 +145,24 @@ class ServoController(threading.Thread):
                 ck = ck + x.decode("utf-8")  # change for Python3
                 byteCount += 1
             x = self.ser1.read()
+        return(ck)
+
+    def recvFromArduino3(self):
+
+        ck = ""
+        x = "z"  # any value that is not an end- or startMarker
+        byteCount = -1  # to allow for the fact that the last increment will be one too many
+
+        # wait for the start character
+        while ord(x) != self.startMarker:
+            x = self.ser2.read()
+
+        # save data until the end marker is found
+        while ord(x) != self.endMarker:
+            if ord(x) != self.startMarker:
+                ck = ck + x.decode("utf-8")  # change for Python3
+                byteCount += 1
+            x = self.ser2.read()
         return(ck)
 
     # ============================

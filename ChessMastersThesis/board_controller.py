@@ -5,10 +5,9 @@ from color import *
 from force import *
 from engine import *
 from stockfish import Stockfish
-import threading
 
 
-class BoardController(threading.Thread):
+class BoardController():
 
     def __init__(self, controller):
 
@@ -31,8 +30,6 @@ class BoardController(threading.Thread):
         self.selector_selected_color = None
 
         self.board_selected_square = None
-        threading.Thread.__init__(self)
-        self.start()
 
         self.board_data = {
             Square.A1: None,
@@ -114,14 +111,6 @@ class BoardController(threading.Thread):
     def _recommended_memory(self):
         return virtual_memory().available/(2*1024*1024)
 
-    def run(self):
-    	'''input_list = []
-    	while True:
-    		if input_list != self.controller.read_input_arduino():
-    			input_list = self.controller.read_input_arduino()
-    			self.controller.board_placed_square()
-    		else:
-    			pass'''
 
     def selector_clicked(self, piece: Piece, color: Color):
         if (self.selector == None): return
@@ -396,3 +385,10 @@ class BoardController(threading.Thread):
 
         self.selector_selected_piece = None
         self.selector_selected_color = None
+    
+    def new_game(self):
+        self.stockfish.set_position()
+        self.stockfish._start_new_game()
+
+    def kill_stock(self):
+        self.stockfish.__del__()
