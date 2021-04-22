@@ -12,9 +12,9 @@ class ServoController():
     startMarker = 60
     endMarker = 62
 
-    serPort = "/dev/ttyACM0"
+    serPort = "/dev/ttyUSB0"
     serPort2 = "/dev/ttyUSB0"
-    serPort3 = "/dev/ttyACM1"
+    serPort3 = "/dev/ttyACM0"
     baudRate = 9600
     try:
         ser = serial.Serial(serPort, baudRate)
@@ -25,7 +25,7 @@ class ServoController():
         print("Serial port 3 " + serPort3 + " opened  Baudrate " + str(baudRate))
 
     except KeyboardInterrupt:
-        ser.close()
+        closeSer()
 
     def __init__(self, c):
 
@@ -35,46 +35,22 @@ class ServoController():
         
 
     def read_loop(self):
-        time.sleep(5)
-        while True:
-            index = 0
-            for square in self.squares:
-                read = self.read_input_arduino()
-                #read = '<01111111111111111000000000000000000000000000000001111111111111111>'
-                read_list = re.findall(r'.', read)
-                index_read = read_list[index + 1]
-                print(index_read)
-                index = index + 1
-                isNowOccupied = False if index_read == 1 else True
-                if isNowOccupied != self.squares[square]["state"]["occupied"]:
-                    self.squares[square]["state"]["occupied"] = isNowOccupied
-                    if isNowOccupied:
-                        # self.squares[square]["servo"].ChangeDutyCycle(NORTH)
-                        self.controller.board_placed_square(square)
-                    else:
-                        # self.squares[square]["servo"].ChangeDutyCycle(SOUTH)
-                        self.controller.board_lifted_square(square)
-            index = 0
+        index = 0
+        read = self.read_input_arduino()
+        read_list = re.findall(r'.', read)
+        print(read_list)
+        for square in self.squares:
+            index_read = read_list[index + 1]
+            index = index + 1
+            isNowOccupied = False if index_read == 1 else True
+            if isNowOccupied != self.squares[square]["state"]["occupied"]:
+                self.squares[square]["state"]["occupied"] = isNowOccupied
+                if isNowOccupied:
+                    self.controller.board_placed_square(square)
+                else:
+                    self.controller.board_lifted_square(square)
+        return
             
-            '''time.sleep(2)
-            for square in self.squares:
-                # read = self.read_input_arduino()
-                read = '<01111111111111110000000000000000000000000000000001111111111111111>'
-                read_list = re.findall(r'.', read)
-                index_read = read_list[index + 1]
-                print(index_read)
-                index = index + 1
-                isNowOccupied = False if int(index_read) is 1 else True
-                if isNowOccupied != self.squares[square]["state"]["occupied"]:
-                    self.squares[square]["state"]["occupied"] = isNowOccupied
-                    if isNowOccupied:
-                        # self.squares[square]["servo"].ChangeDutyCycle(NORTH)
-                        self.controller.board_placed_square(square)
-                    else:
-                        # self.squares[square]["servo"].ChangeDutyCycle(SOUTH)
-                        self.controller.board_lifted_square(square)'''
-
-
     def setLed(self, square, attackable):
         return
         if attackable:
@@ -204,3 +180,5 @@ class ServoController():
     def closeSer(self):
         print("Closing serial connection")
         self.ser.close()
+        self.ser1.close()
+        self.ser2.close()

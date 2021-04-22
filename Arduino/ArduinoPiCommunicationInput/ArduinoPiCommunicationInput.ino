@@ -6,7 +6,7 @@
 #endif
 
 // Arduino Output Pin for Neopixels
-#define NEOPIXELPIN 47
+#define NEOPIXELPIN 2
 
 // Number of Neopixels
 #define NUMPIXELS 14
@@ -25,26 +25,26 @@ int ledBrightness = 100;
 
 
 MUX74HC4067 mux(8, A0, A1, A2, A3);
-MUX74HC4067 mux2(26, A5, A6, A7, A8);
+MUX74HC4067 mux2(26, A8, A9, A10, A11);
 
 byte dataMux;
 byte dataMux2;
 
 //============ Side Buttons Code
 
-int enablePwrLed = 10;
-int enableModeLed = 11;
+//int enablePwrLed = 41;
+//int enableModeLed = 43;
 //int enableDemoLed = ;
 
 //H-bridge Pins
-int inputModeLed1 = 4;
-int inputModeLed2 = 5;
+//int inputModeLed1 = 4;
+//int inputModeLed2 = 5;
 //int inputFeedbackLed1 = ;
 //int inputFeedbackLed2 = ;
 
 //Button Pins
-int buttonModePin = 8;
-int buttonFeedbackPin = 0;
+int buttonModePin = 43;
+int buttonFeedbackPin = 41;
 
 boolean buttonModeState = LOW;
 boolean buttonFeedbackState = LOW;
@@ -68,7 +68,7 @@ void setup()
   // Configures how the SIG pin will be interfaced
   // e.g. The SIG pin connects to a ANALOG input
   mux.signalPin(A4, INPUT, ANALOG);
-  mux2.signalPin(A9, INPUT, ANALOG);
+  mux2.signalPin(A12, INPUT, ANALOG);
 
   // Button Setup
 
@@ -87,7 +87,7 @@ void loop()
   readInputPieces();
   buttonState();
   modeSelector();
-  sendToPi();
+  //sendToPi();
 }
 
 
@@ -96,24 +96,59 @@ void readInputPieces() {
   int data;
   int data2;
 
-  for (byte i = 0; i < 16; ++i)
+  for (byte i = 8; i < 16; ++i)
   {
     // Reads from channel i and returns HIGH or LOW
     dataMux = mux.read(i);
     dataMux2 = mux2.read(i);
 
-    if (dataMux > 205) {
-      boardPieceDetector[i + 1] = '0';
+    if (dataMux > 25) {
+      boardPieceDetector[i + 1 - 8] = '0';
+    }
+    else{
+      boardPieceDetector[i + 1 - 8] = '1';
     }
 
-    if (dataMux2 > 205) {
-      boardPieceDetector[i + 1 + 16] = '0';
+    if (dataMux2 > 25) {
+      boardPieceDetector[i + 1 + 16 - 8] = '0';
     }
     else {
-      boardPieceDetector[i + 1] = '1';
-      boardPieceDetector[i + 1 + 16] = '1';
+      boardPieceDetector[i + 1 + 16 - 8] = '1';
     }
+    Serial.print(i - 8 + 1);
+    Serial.print(": ");
+    Serial.println(dataMux); 
+    Serial.print(i + 16 - 8 + 1);
+    Serial.print(": ");
+    Serial.println(dataMux2); 
   }
+  for (byte i = 0; i < 8; ++i)
+  {
+    // Reads from channel i and returns HIGH or LOW
+    dataMux = mux.read(i);
+    dataMux2 = mux2.read(i);
+
+    if (dataMux > 25) {
+      boardPieceDetector[i + 1 + 8] = '0';
+    }
+    else{
+      boardPieceDetector[i + 1 + 8] = '1';
+    }
+
+    if (dataMux2 > 25) {
+      boardPieceDetector[i + 1 + 16 + 8] = '0';
+    }
+    else {
+      boardPieceDetector[i + 1 + 16 + 8] = '1';
+    }
+    Serial.print(i + 8 + 1);
+    Serial.print(": ");
+    Serial.println(dataMux); 
+    Serial.print(i + 16 + 8 + 1);
+    Serial.print(": ");
+    Serial.println(dataMux2); 
+  }
+  delay(200);
 }
 
 void buttonState() {
@@ -123,7 +158,7 @@ void buttonState() {
 
   if (buttonModeState != oldButtonModeState) {
     if (buttonModeState == HIGH) {
-      if (currentButtonModeState < 3) {
+      if (currentButtonModeState < 2) {
         currentButtonModeState ++;
       } else {
         currentButtonModeState = 0;
@@ -134,7 +169,7 @@ void buttonState() {
 
   if (buttonFeedbackState != oldButtonFeedbackState) {
     if (buttonFeedbackState == HIGH) {
-      if (currentButtonFeedbackState < 4) {
+      if (currentButtonFeedbackState < 3) {
         currentButtonFeedbackState ++;
       } else {
         currentButtonFeedbackState = 0;
@@ -160,7 +195,7 @@ void buttonLightControl(int buttonLightModeValue, int buttonLightFeedbackValue) 
 
   powerOffAllLEDs();
   pixels.setPixelColor(buttonLightModeValue, pixels.Color(ledBrightness, ledBrightness, ledBrightness));
-  pixels.setPixelColor((buttonLightFeedbackValue + 3), pixels.Color(ledBrightness, ledBrightness, ledBrightness));
+  pixels.setPixelColor((buttonLightFeedbackValue + 7), pixels.Color(ledBrightness, ledBrightness, ledBrightness));
 }
 
 void modeSelector() {

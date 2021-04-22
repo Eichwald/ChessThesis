@@ -16,16 +16,16 @@ class App(threading.Thread):
       self.controller.board = self.bc
       self.gui = GUI(self.bc)
       threading.Thread.__init__(self)
-      self.daemon = True
       self.start()
+      time.sleep(5)
       try:
          while True:
-            # self.sc.run()
             self.gui.start()
-            self.sc.read_loop()
+            print("looping")
+            #self.sc.read_loop()
       except KeyboardInterrupt:
          self.sc.closeSer()
-         print("Bye Bye")
+         print("Closing serial connections")
 
    def run(self):
       print("running")

@@ -1,3 +1,19 @@
+//============ Neopixel Code
+
+#include <Adafruit_NeoPixel.h>
+#ifdef __AVR__
+#include <avr/power.h> // Required for 16 MHz Adafruit Trinket
+#endif
+
+// Arduino Output Pin for Neopixels
+#define NEOPIXELPIN 2
+
+// Number of Neopixels
+#define NUMPIXELS 14
+
+Adafruit_NeoPixel pixels(NUMPIXELS, NEOPIXELPIN, NEO_GRB + NEO_KHZ800);
+
+int ledBrightness = 100;
 //============
 
 #include "MUX74HC4067.h"
@@ -8,10 +24,22 @@
 
 
 MUX74HC4067 mux(8, A0, A1, A2, A3);
-MUX74HC4067 mux2(26, A5, A6, A7, A8);
+MUX74HC4067 mux2(26, A8, A9, A10, A11);
 
 byte dataMux;
 byte dataMux2;
+
+//Button Pins
+int buttonModePin = 43;
+int buttonFeedbackPin = 41;
+
+boolean buttonModeState = LOW;
+boolean buttonFeedbackState = LOW;
+
+int currentButtonModeState = 0;
+int currentButtonFeedbackState = 0;
+boolean oldButtonModeState = LOW;
+boolean oldButtonFeedbackState = LOW;
 
 //============
 
@@ -22,17 +50,27 @@ void setup()
 {
   Serial.begin(9600);
   Serial.println("<Arduino3 is ready>");
+  pixels.begin(); // INITIALIZE NeoPixel strip object
 
   // Configures how the SIG pin will be interfaced
   // e.g. The SIG pin connects to a ANALOG input
   mux.signalPin(A4, INPUT, ANALOG);
-  mux2.signalPin(A9, INPUT, ANALOG);
+  mux2.signalPin(A12, INPUT, ANALOG);
+  
+  
+  // Button Setup
+
+  pinMode(buttonModePin, INPUT);
+  pinMode(buttonFeedbackPin, INPUT);
+
+  powerOffAllLEDs();
 
 }
 
 void loop()
 {
   readInputPieces();
+  sendToPi();
 }
 
 void readInputPieces() {
@@ -45,16 +83,17 @@ void readInputPieces() {
     // Reads from channel i and returns HIGH or LOW
     dataMux = mux.read(i);
     dataMux2 = mux2.read(i);
-
-    if (dataMux > 205) {
+    if (dataMux > 20) {
       boardPieceDetector[i] = '0';
-    }
-
-    if (dataMux2 > 205) {
-      boardPieceDetector[i + 16] = '0';
     }
     else {
       boardPieceDetector[i] = '1';
+    }
+
+    if (dataMux2 > 20) {
+      boardPieceDetector[i + 16] = '0';
+    }
+    else {
       boardPieceDetector[i + 16] = '1';
     }
   }
