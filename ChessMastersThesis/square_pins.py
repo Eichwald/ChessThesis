@@ -10,268 +10,204 @@ class square_pins():
 
         def initialize():
             square = {
-                # A
+                # 1
                 Square.A1: {
-                    "pins": { "photoResistor": 15, "led": 2, "servo": 26},
                     "state": { "occupied": False, "force": Force.neutral }
                 },
-                Square.A2: {
-                    "pins": { "photoResistor": 11, "led": 12, "servo": 19 },
-                    "state": { "occupied": False, "force": Force.neutral }
-                },
-                Square.A3: {
-                    "pins": { "photoResistor": 9, "led": 1, "servo": 13 },
-                    "state": { "occupied": False, "force": Force.neutral }
-                },
-                Square.A4: {
-                    "pins": { "photoResistor": 15, "led": 2, "servo": 27 },
-                    "state": { "occupied": False, "force": Force.neutral }
-                },
-                Square.A5: {
-                    "pins": { "photoResistor": 11, "led": 12, "servo": 19 },
-                    "state": { "occupied": False, "force": Force.neutral }
-                },
-                Square.A6: {
-                    "pins": { "photoResistor": 9, "led": 1, "servo": 13 },
-                    "state": { "occupied": False, "force": Force.neutral }
-                },
-                Square.A7: {
-                    "pins": { "photoResistor": 15, "led": 2, "servo": 26 },
-                    "state": { "occupied": False, "force": Force.neutral }
-                },
-                Square.A8: {
-                    "pins": { "photoResistor": 11, "led": 12, "servo": 19 },
-                    "state": { "occupied": False, "force": Force.neutral }
-                },
-                # B
                 Square.B1: {
-                    "pins": { "photoResistor": 15, "led": 2, "servo": 26 },
+                    "state": { "occupied": False, "force": Force.neutral }
+                },
+                Square.C1: {
+                    "state": { "occupied": False, "force": Force.neutral }
+                },
+                Square.D1: {
+                    "state": { "occupied": False, "force": Force.neutral }
+                },
+                Square.E1: {
+                    "state": { "occupied": False, "force": Force.neutral }
+                },
+                Square.F1: {
+                    "state": { "occupied": False, "force": Force.neutral }
+                },
+                Square.G1: {
+                    "state": { "occupied": False, "force": Force.neutral }
+                },
+                Square.H1: {
+                    "state": { "occupied": False, "force": Force.neutral }
+                },
+                # 2
+                Square.A2: {
                     "state": { "occupied": False, "force": Force.neutral }
                 },
                 Square.B2: {
-                    "pins": { "photoResistor": 11, "led": 12, "servo": 19 },
-                    "state": { "occupied": False, "force": Force.neutral }
-                },
-                Square.B3: {
-                    "pins": { "photoResistor": 9, "led": 1, "servo": 13 },
-                    "state": { "occupied": False, "force": Force.neutral }
-                },
-                Square.B4: {
-                    "pins": { "photoResistor": 15, "led": 2, "servo": 26 },
-                    "state": { "occupied": False, "force": Force.neutral }
-                },
-                Square.B5: {
-                    "pins": { "photoResistor": 11, "led": 12, "servo": 19 },
-                    "state": { "occupied": False, "force": Force.neutral }
-                },
-                Square.B6: {
-                    "pins": { "photoResistor": 9, "led": 1, "servo": 13 },
-                    "state": { "occupied": False, "force": Force.neutral }
-                },
-                Square.B7: {
-                    "pins": { "photoResistor": 15, "led": 2, "servo": 26 },
-                    "state": { "occupied": False, "force": Force.neutral }
-                },
-                Square.B8: {
-                    "pins": { "photoResistor": 11, "led": 12, "servo": 19 },
-                    "state": { "occupied": False, "force": Force.neutral }
-                },
-                # C
-                Square.C1: {
-                    "pins": { "photoResistor": 15, "led": 2, "servo": 26 },
                     "state": { "occupied": False, "force": Force.neutral }
                 },
                 Square.C2: {
-                    "pins": { "photoResistor": 11, "led": 12, "servo": 19 },
-                    "state": { "occupied": False, "force": Force.neutral }
-                },
-                Square.C3: {
-                    "pins": { "photoResistor": 9, "led": 1, "servo": 13 },
-                    "state": { "occupied": False, "force": Force.neutral }
-                },
-                Square.C4: {
-                    "pins": { "photoResistor": 15, "led": 2, "servo": 26 },
-                    "state": { "occupied": False, "force": Force.neutral }
-                },
-                Square.C5: {
-                    "pins": { "photoResistor": 11, "led": 12, "servo": 19 },
-                    "state": { "occupied": False, "force": Force.neutral }
-                },
-                Square.C6: {
-                    "pins": { "photoResistor": 9, "led": 1, "servo": 13 },
-                    "state": { "occupied": False, "force": Force.neutral }
-                },
-                Square.C7: {
-                    "pins": { "photoResistor": 15, "led": 2, "servo": 26 },
-                    "state": { "occupied": False, "force": Force.neutral }
-                },
-                Square.C8: {
-                    "pins": { "photoResistor": 11, "led": 12, "servo": 19 },
-                    "state": { "occupied": False, "force": Force.neutral }
-                },
-                # D
-                Square.D1: {
-                    "pins": { "photoResistor": 15, "led": 2, "servo": 26 },
                     "state": { "occupied": False, "force": Force.neutral }
                 },
                 Square.D2: {
-                    "pins": { "photoResistor": 11, "led": 12, "servo": 19 },
-                    "state": { "occupied": False, "force": Force.neutral }
-                },
-                Square.D3: {
-                    "pins": { "photoResistor": 9, "led": 1, "servo": 13 },
-                    "state": { "occupied": False, "force": Force.neutral }
-                },
-                Square.D4: {
-                    "pins": { "photoResistor": 15, "led": 2, "servo": 26 },
-                    "state": { "occupied": False, "force": Force.neutral }
-                },
-                Square.D5: {
-                    "pins": { "photoResistor": 11, "led": 12, "servo": 19 },
-                    "state": { "occupied": False, "force": Force.neutral }
-                },
-                Square.D6: {
-                    "pins": { "photoResistor": 9, "led": 1, "servo": 13 },
-                    "state": { "occupied": False, "force": Force.neutral }
-                },
-                Square.D7: {
-                    "pins": { "photoResistor": 15, "led": 2, "servo": 26 },
-                    "state": { "occupied": False, "force": Force.neutral }
-                },
-                Square.D8: {
-                    "pins": { "photoResistor": 11, "led": 12, "servo": 19 },
-                    "state": { "occupied": False, "force": Force.neutral }
-                },
-                # E
-                Square.E1: {
-                    "pins": { "photoResistor": 15, "led": 2, "servo": 26 },
                     "state": { "occupied": False, "force": Force.neutral }
                 },
                 Square.E2: {
-                    "pins": { "photoResistor": 11, "led": 12, "servo": 19 },
-                    "state": { "occupied": False, "force": Force.neutral }
-                },
-                Square.E3: {
-                    "pins": { "photoResistor": 9, "led": 1, "servo": 13 },
-                    "state": { "occupied": False, "force": Force.neutral }
-                },
-                Square.E4: {
-                    "pins": { "photoResistor": 15, "led": 2, "servo": 26 },
-                    "state": { "occupied": False, "force": Force.neutral }
-                },
-                Square.E5: {
-                    "pins": { "photoResistor": 11, "led": 12, "servo": 19 },
-                    "state": { "occupied": False, "force": Force.neutral }
-                },
-                Square.E6: {
-                    "pins": { "photoResistor": 9, "led": 1, "servo": 13 },
-                    "state": { "occupied": False, "force": Force.neutral }
-                },
-                Square.E7: {
-                    "pins": { "photoResistor": 15, "led": 2, "servo": 26 },
-                    "state": { "occupied": False, "force": Force.neutral }
-                },
-                Square.E8: {
-                    "pins": { "photoResistor": 11, "led": 12, "servo": 19 },
-                    "state": { "occupied": False, "force": Force.neutral }
-                },
-                # F
-                Square.F1: {
-                    "pins": { "photoResistor": 15, "led": 2, "servo": 26 },
                     "state": { "occupied": False, "force": Force.neutral }
                 },
                 Square.F2: {
-                    "pins": { "photoResistor": 11, "led": 12, "servo": 19 },
-                    "state": { "occupied": False, "force": Force.neutral }
-                },
-                Square.F3: {
-                    "pins": { "photoResistor": 9, "led": 1, "servo": 13 },
-                    "state": { "occupied": False, "force": Force.neutral }
-                },
-                Square.F4: {
-                    "pins": { "photoResistor": 15, "led": 2, "servo": 26 },
-                    "state": { "occupied": False, "force": Force.neutral }
-                },
-                Square.F5: {
-                    "pins": { "photoResistor": 11, "led": 12, "servo": 19 },
-                    "state": { "occupied": False, "force": Force.neutral }
-                },
-                Square.F6: {
-                    "pins": { "photoResistor": 9, "led": 1, "servo": 13 },
-                    "state": { "occupied": False, "force": Force.neutral }
-                },
-                Square.F7: {
-                    "pins": { "photoResistor": 15, "led": 2, "servo": 26 },
-                    "state": { "occupied": False, "force": Force.neutral }
-                },
-                Square.F8: {
-                    "pins": { "photoResistor": 11, "led": 12, "servo": 19 },
-                    "state": { "occupied": False, "force": Force.neutral }
-                },
-                # G
-                Square.G1: {
-                    "pins": { "photoResistor": 15, "led": 2, "servo": 26 },
                     "state": { "occupied": False, "force": Force.neutral }
                 },
                 Square.G2: {
-                    "pins": { "photoResistor": 11, "led": 12, "servo": 19 },
-                    "state": { "occupied": False, "force": Force.neutral }
-                },
-                Square.G3: {
-                    "pins": { "photoResistor": 9, "led": 1, "servo": 13 },
-                    "state": { "occupied": False, "force": Force.neutral }
-                },
-                Square.G4: {
-                    "pins": { "photoResistor": 15, "led": 2, "servo": 26 },
-                    "state": { "occupied": False, "force": Force.neutral }
-                },
-                Square.G5: {
-                    "pins": { "photoResistor": 11, "led": 12, "servo": 19 },
-                    "state": { "occupied": False, "force": Force.neutral }
-                },
-                Square.G6: {
-                    "pins": { "photoResistor": 9, "led": 1, "servo": 13 },
-                    "state": { "occupied": False, "force": Force.neutral }
-                },
-                Square.G7: {
-                    "pins": { "photoResistor": 15, "led": 2, "servo": 26 },
-                    "state": { "occupied": False, "force": Force.neutral }
-                },
-                Square.G8: {
-                    "pins": { "photoResistor": 11, "led": 12, "servo": 19 },
-                    "state": { "occupied": False, "force": Force.neutral }
-                },
-                # H
-                Square.H1: {
-                    "pins": { "photoResistor": 15, "led": 2, "servo": 26 },
                     "state": { "occupied": False, "force": Force.neutral }
                 },
                 Square.H2: {
-                    "pins": { "photoResistor": 11, "led": 12, "servo": 19 },
+                    "state": { "occupied": False, "force": Force.neutral }
+                },
+                # 3
+                Square.A3: {
+                    "state": { "occupied": False, "force": Force.neutral }
+                },
+                Square.B3: {
+                    "state": { "occupied": False, "force": Force.neutral }
+                },
+                Square.C3: {
+                    "state": { "occupied": False, "force": Force.neutral }
+                },
+                Square.D3: {
+                    "state": { "occupied": False, "force": Force.neutral }
+                },
+                Square.E3: {
+                    "state": { "occupied": False, "force": Force.neutral }
+                },
+                Square.F3: {
+                    "state": { "occupied": False, "force": Force.neutral }
+                },
+                Square.G3: {
                     "state": { "occupied": False, "force": Force.neutral }
                 },
                 Square.H3: {
-                    "pins": { "photoResistor": 9, "led": 1, "servo": 13 },
+                    "state": { "occupied": False, "force": Force.neutral }
+                },
+                # 4
+                Square.A4: {
+                    "state": { "occupied": False, "force": Force.neutral }
+                },
+                Square.B4: {
+                    "state": { "occupied": False, "force": Force.neutral }
+                },
+                Square.C4: {
+                    "state": { "occupied": False, "force": Force.neutral }
+                },
+                Square.D4: {
+                    "state": { "occupied": False, "force": Force.neutral }
+                },
+                Square.E4: {
+                    "state": { "occupied": False, "force": Force.neutral }
+                },
+                Square.F4: {
+                    "state": { "occupied": False, "force": Force.neutral }
+                },
+                Square.G4: {
                     "state": { "occupied": False, "force": Force.neutral }
                 },
                 Square.H4: {
-                    "pins": { "photoResistor": 15, "led": 2, "servo": 26 },
+                    "state": { "occupied": False, "force": Force.neutral }
+                },
+                # 5
+                Square.A5: {
+                    "state": { "occupied": False, "force": Force.neutral }
+                },
+                Square.B5: {
+                    "state": { "occupied": False, "force": Force.neutral }
+                },
+                Square.C5: {
+                    "state": { "occupied": False, "force": Force.neutral }
+                },
+                Square.D5: {
+                    "state": { "occupied": False, "force": Force.neutral }
+                },
+                Square.E5: {
+                    "state": { "occupied": False, "force": Force.neutral }
+                },
+                Square.F5: {
+                    "state": { "occupied": False, "force": Force.neutral }
+                },
+                Square.G5: {
                     "state": { "occupied": False, "force": Force.neutral }
                 },
                 Square.H5: {
-                    "pins": { "photoResistor": 11, "led": 12, "servo": 19 },
+                    "state": { "occupied": False, "force": Force.neutral }
+                },
+                # 6
+                Square.A6: {
+                    "state": { "occupied": False, "force": Force.neutral }
+                },
+                Square.B6: {
+                    "state": { "occupied": False, "force": Force.neutral }
+                },
+                Square.C6: {
+                    "state": { "occupied": False, "force": Force.neutral }
+                },
+                Square.D6: {
+                    "state": { "occupied": False, "force": Force.neutral }
+                },
+                Square.E6: {
+                    "state": { "occupied": False, "force": Force.neutral }
+                },
+                Square.F6: {
+                    "state": { "occupied": False, "force": Force.neutral }
+                },
+                Square.G6: {
                     "state": { "occupied": False, "force": Force.neutral }
                 },
                 Square.H6: {
-                    "pins": { "photoResistor": 9, "led": 1, "servo": 13 },
+                    "state": { "occupied": False, "force": Force.neutral }
+                },
+                # 7
+                Square.A7: {
+                    "state": { "occupied": False, "force": Force.neutral }
+                },
+                Square.B7: {
+                    "state": { "occupied": False, "force": Force.neutral }
+                },
+                Square.C7: {
+                    "state": { "occupied": False, "force": Force.neutral }
+                },
+                Square.D7: {
+                    "state": { "occupied": False, "force": Force.neutral }
+                },
+                Square.E7: {
+                    "state": { "occupied": False, "force": Force.neutral }
+                },
+                Square.F7: {
+                    "state": { "occupied": False, "force": Force.neutral }
+                },
+                Square.G7: {
                     "state": { "occupied": False, "force": Force.neutral }
                 },
                 Square.H7: {
-                    "pins": { "photoResistor": 15, "led": 2, "servo": 26 },
+                    "state": { "occupied": False, "force": Force.neutral }
+                },
+                # 8
+                Square.A8: {
+                    "state": { "occupied": False, "force": Force.neutral }
+                },
+                Square.B8: {
+                    "state": { "occupied": False, "force": Force.neutral }
+                },
+                Square.C8: {
+                    "state": { "occupied": False, "force": Force.neutral }
+                },
+                Square.D8: {
+                    "state": { "occupied": False, "force": Force.neutral }
+                },
+                Square.E8: {
+                    "state": { "occupied": False, "force": Force.neutral }
+                },
+                Square.F8: {
+                    "state": { "occupied": False, "force": Force.neutral }
+                },
+                Square.G8: {
                     "state": { "occupied": False, "force": Force.neutral }
                 },
                 Square.H8: {
-                    "pins": { "photoResistor": 11, "led": 12, "servo": 19 },
                     "state": { "occupied": False, "force": Force.neutral }
                 },
             }

@@ -12,10 +12,12 @@ class ServoController():
     startMarker = 60
     endMarker = 62
 
-    serPort = "/dev/ttyUSB0"
+    serPort = "/dev/ttyUSB1"
     serPort2 = "/dev/ttyUSB0"
     serPort3 = "/dev/ttyACM0"
     baudRate = 9600
+
+    mode = 0
     try:
         ser = serial.Serial(serPort, baudRate)
         ser1 = serial.Serial(serPort2, baudRate)
@@ -38,17 +40,29 @@ class ServoController():
         index = 0
         read = self.read_input_arduino()
         read_list = re.findall(r'.', read)
+        self.mode = read_list[0]
+        if(len(read_list) > 65):
+            return
         print(read_list)
         for square in self.squares:
-            index_read = read_list[index + 1]
+            try:
+                index_read = read_list[index + 1]
+            except IndexError:
+                index_read = None
             index = index + 1
-            isNowOccupied = False if index_read == 1 else True
+            isNowOccupied = True if index_read == '1' else False
             if isNowOccupied != self.squares[square]["state"]["occupied"]:
                 self.squares[square]["state"]["occupied"] = isNowOccupied
-                if isNowOccupied:
+                if isNowOccupied is True:
+                    print("placing")
                     self.controller.board_placed_square(square)
                 else:
+                    print("lifting")
                     self.controller.board_lifted_square(square)
+            else:
+                pass
+
+
         return
             
     def setLed(self, square, attackable):
@@ -74,10 +88,11 @@ class ServoController():
             self.squares[square]["servo"].ChangeDutyCycle(SOUTH)
 
     def send_led_string(self, send_string):
-        self.sendToArduino(send_string)
+        self.sendToArduino(f'<{self.mode}{send_string}>')
     # ======================================
 
     def sendToArduino(self, sendStr):
+        print(sendStr)
         self.ser.write(sendStr.encode('utf-8'))  # change for Python3
 
     # ======================================

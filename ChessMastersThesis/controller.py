@@ -41,6 +41,7 @@ class Controller():
                 # if we are placing piece on board from GUI
                 print(str(color) + " " + str(piece) + " on " + str(square) + " are placed in GUI and is now registred")
             else:
+                return
                 # if we are setting up the board frely
                 print("placed a piece freely on " + str(square) + ", please registre it in GUI")
             return

@@ -1,3 +1,19 @@
+int vibrationState = 0; //positive vibrationState
+int vibrationState2 = 0; //Negative vibrationState
+
+unsigned long vibrationStarted = 0;
+
+const long interval = 10; //interval for vibrations
+
+int clickingState = 0;
+const long clickingInterval = 100; //Interval for clicking
+unsigned long clickingStarted = 0;
+
+
+int fadingState = 0;
+const long fadingInterval = 10; //interval for fadingState
+unsigned long fadingStarted = 0;
+
 //============ Neopixel Code
 
 #include <Adafruit_NeoPixel.h>
@@ -42,7 +58,17 @@ Adafruit_PWMServoDriver pwm12 = Adafruit_PWMServoDriver(0x4B);
 
 const byte numChars = 65;
 //char boardPieceController[numChars];
-char boardPieceController[numChars] = {'5',
+char boardPieceController[numChars] = {'1',
+'0','0','0','0','0','0','0','0',
+'0','0','0','0','0','0','0','0',
+'0','0','0','0','0','0','0','0',
+'0','0','0','0','0','0','0','0',
+'0','0','0','0','0','0','0','0',
+'0','0','0','0','0','0','0','0',
+'0','0','0','0','0','0','0','0',
+'0','0','0','0','0','0','0','0'};
+
+/*
 '2','2','2','2','2','2','2','2',
 '2','2','2','2','2','2','2','2',
 '2','2','2','2','2','2','2','2',
@@ -51,6 +77,7 @@ char boardPieceController[numChars] = {'5',
 '2','2','2','2','2','2','2','2',
 '2','2','2','2','2','2','2','2',
 '2','2','2','2','2','2','2','2'};
+*/
 
 boolean newData = false;
 
@@ -77,12 +104,11 @@ void setup() {
 //=============
 
 void loop() {
-  //recvWithStartEndMarkers();
-  //showNewData();
-  Serial.println("looping");
+  recvWithStartEndMarkers();
+  showNewData();
   updateBoard();
   pixels.show();   // Send the updated pixel colors to the hardware.
-  Serial.println(boardPieceController[50]);
+  //Serial.println(boardPieceController[50]);
 }
 
 
@@ -172,20 +198,26 @@ void updateBoard() {
 //=============
 
 void updateLED() {
+  
+
 
   for (int i = 0; i < NUMPIXELS / 2; i++) {
-    if (boardPieceController[i + 1] == '2') {
+    if (boardPieceController[i + 1] == '1') {
       pixels.setPixelColor(i * 2, pixels.Color(ledBrightness, ledBrightness, ledBrightness)); //Multiply i with 2
-    }
+             //Serial.println("in LED");
+ 
+  }
     else {
-      pixels.setPixelColor(i, pixels.Color(100, 0, 0)); //Multiply i with 2
-    }
+      pixels.setPixelColor(i * 2, pixels.Color(100, 0, 0)); //Multiply i with 2
+            //Serial.println("in LED: NO");
+          }
   }
 }
 
 //=============
 
 void updateMagnet() {
+
 
   for (int i = 0; i < 64; i++) {
     int boardNumber1 = i * 3 / 16;
@@ -206,10 +238,11 @@ void updateMagnet() {
     }
 
     if (boardPieceController[i +1] == '2') { //Legal and Good Move. Attracts Magnet.
-
+      boardPWM[boardNumber1].setPWM(pinNumber1, 0, 0);
+      boardPWM[boardNumber2].setPWM(pinNumber2, 0, 4095);
+      boardPWM[boardNumber3].setPWM(pinNumber3, 0, 4095);
     }
-    else if (boardPieceController[i + 1] == '1') {//Illegal nove --> Pushes Magnet away.
-      Serial.println("in here");
+    else if (boardPieceController[i + 1] == '3') {//Illegal nove --> Pushes Magnet away.
       boardPWM[boardNumber1].setPWM(pinNumber1, 0, 4095);
       boardPWM[boardNumber2].setPWM(pinNumber2, 0, 0);
       boardPWM[boardNumber3].setPWM(pinNumber3, 0, 4095);
@@ -226,6 +259,7 @@ void turnOffVisual() {
 
   for (int i = 0; i < NUMPIXELS; i++) {
     pixels.setPixelColor(i, pixels.Color(0, 0, 0)); //Multiply i with 2
+    
   }
 }
 
@@ -250,72 +284,116 @@ void turnOffMagnet() {
   }
 
 }
+
 void demoMode() {
 
   //Demo Piece 1 --> Field 24 --> Positive Magnetic Feedback.
-  
-  pixels.setPixelColor(24, pixels.Color(ledBrightness, ledBrightness, ledBrightness));
 
-  boardPWM[4].setPWM(8, 0, 0); //XXX Skal ændres til at passe til H-bridge.
+  pixels.setPixelColor(24*2, pixels.Color(ledBrightness, ledBrightness, ledBrightness));
+
+  boardPWM[4].setPWM(8, 0, 4095);
   boardPWM[4].setPWM(9, 0, 0);
-  boardPWM[4].setPWM(10, 0, 0);
+  boardPWM[4].setPWM(10, 0, 4095);
 
 
   //Demo Piece 2 --> Field 33 --> Negative Magnetic Feedback.
-  
-  pixels.setPixelColor(33, pixels.Color(ledBrightness, ledBrightness, ledBrightness));
 
-  boardPWM[6].setPWM(3, 0, 0); //XXX Skal ændres til at passe til H-bridge. Omvendt den første :)
-  boardPWM[6].setPWM(4, 0, 0);
-  boardPWM[6].setPWM(5, 0, 0);
+  pixels.setPixelColor(33*2, pixels.Color(ledBrightness, ledBrightness, ledBrightness));
+
+  boardPWM[6].setPWM(3, 0, 0); 
+  boardPWM[6].setPWM(4, 0, 4095);
+  boardPWM[6].setPWM(5, 0, 4095);
 
   //Demo Piece 3 --> Field 26 --> Positive Vibration Feedback
-  
-  pixels.setPixelColor(26, pixels.Color(ledBrightness, ledBrightness, ledBrightness));
 
-  boardPWM[4].setPWM(14, 0, 0); //XXX Skal ændres til at passe til H-bridge. 
+
+  pixels.setPixelColor(26*2, pixels.Color(ledBrightness, ledBrightness, ledBrightness));
+
+  unsigned long currentMillis = millis();
+  
+  if (currentMillis - vibrationStarted >= interval) {
+    vibrationStarted = currentMillis;
+
+    if (vibrationState == 0) {
+      vibrationState = 4095;
+      vibrationState2 = 0;
+    } 
+    else {
+      vibrationState = 0;
+      vibrationState2 = 4095;
+    }
+
+  }
+
+  boardPWM[4].setPWM(14, 0, vibrationState); 
   boardPWM[4].setPWM(15, 0, 0);
-  boardPWM[5].setPWM(0, 0, 0);
+  boardPWM[5].setPWM(0, 0, 4095);
 
   //Demo Piece 4 --> Field 35 --> Negative Vibration Feedback
-  
-  pixels.setPixelColor(35, pixels.Color(ledBrightness, ledBrightness, ledBrightness));
 
-  boardPWM[6].setPWM(9, 0, 0); //XXX Skal ændres til at passe til H-bridge. 
-  boardPWM[6].setPWM(10, 0, 0);
-  boardPWM[6].setPWM(11, 0, 0);
+  pixels.setPixelColor(35*2, pixels.Color(ledBrightness, ledBrightness, ledBrightness));
+
+  boardPWM[6].setPWM(9, 0, 0);
+  boardPWM[6].setPWM(10, 0, vibrationState);
+  boardPWM[6].setPWM(11, 0, 4095);
 
 
   //Demo Piece 5 --> Field 28 --> Neutral Vibration Feedback
+
+  pixels.setPixelColor(28*2, pixels.Color(ledBrightness, ledBrightness, ledBrightness));
+
+  boardPWM[5].setPWM(4, 0, vibrationState); 
+  boardPWM[5].setPWM(5, 0, vibrationState2);
+  boardPWM[5].setPWM(6, 0, 4095);
+
+  //Demo Piece 6 --> Field 37 --> neutral Vibration Feedback piece shakingu
+
+  pixels.setPixelColor(37*2, pixels.Color(ledBrightness, ledBrightness, ledBrightness));
+
+  boardPWM[6].setPWM(15, 0, vibrationState); 
+  boardPWM[7].setPWM(0, 0, vibrationState2);
+  boardPWM[7].setPWM(1, 0, 2860);
+
+  //Demo Piece 7 --> Field 30 --> clicking slowly
   
-  pixels.setPixelColor(28, pixels.Color(ledBrightness, ledBrightness, ledBrightness));
+  if (currentMillis - clickingStarted >= clickingInterval) {
+    clickingStarted = currentMillis;
 
-  boardPWM[5].setPWM(4, 0, 0); //XXX Skal ændres til at passe til H-bridge. 
-  boardPWM[5].setPWM(5, 0, 0);
-  boardPWM[5].setPWM(6, 0, 0);
+    if (clickingState == 0) {
+      clickingState = 4095;
+    
+    } 
+    else {
+      clickingState = 0;
+    }
+  }
 
-  //Demo Piece 6 --> Field 37 --> Slow Vibration Feedback
-  
-  pixels.setPixelColor(37, pixels.Color(ledBrightness, ledBrightness, ledBrightness));
+  pixels.setPixelColor(30*2, pixels.Color(ledBrightness, ledBrightness, ledBrightness));
 
-  boardPWM[6].setPWM(15, 0, 0); //XXX Skal ændres til at passe til H-bridge. 
-  boardPWM[7].setPWM(0, 0, 0);
-  boardPWM[7].setPWM(1, 0, 0);
-
-  //Demo Piece 7 --> Field 30 --> 
-  
-  pixels.setPixelColor(30, pixels.Color(ledBrightness, ledBrightness, ledBrightness));
-
-  boardPWM[5].setPWM(10, 0, 0); //XXX Skal ændres til at passe til H-bridge.
+  boardPWM[5].setPWM(10, 0, clickingState); 
   boardPWM[5].setPWM(11, 0, 0);
-  boardPWM[5].setPWM(12, 0, 0);
+  boardPWM[5].setPWM(12, 0, 4095);
 
-  //Demo Piece 8 --> Field 39
-  
-  pixels.setPixelColor(39, pixels.Color(ledBrightness, ledBrightness, ledBrightness));
 
-  boardPWM[7].setPWM(5, 0, 0); //XXX Skal ændres til at passe til H-bridge. 
+
+  //Demo Piece 8 --> Field 39 --> Fading effect
+
+
+  if (currentMillis - fadingStarted >= fadingInterval) {
+    fadingStarted = currentMillis;
+
+    if (fadingState < 4095) {
+      fadingState += 80;    
+    } 
+    else {
+      fadingState = 1000;
+    }
+  }
+
+  pixels.setPixelColor(39*2, pixels.Color(ledBrightness, ledBrightness, ledBrightness));
+
+  boardPWM[7].setPWM(5, 0, 4095); 
   boardPWM[7].setPWM(6, 0, 0);
-  boardPWM[7].setPWM(7, 0, 0);
+  boardPWM[7].setPWM(7, 0, fadingState);
 
 }

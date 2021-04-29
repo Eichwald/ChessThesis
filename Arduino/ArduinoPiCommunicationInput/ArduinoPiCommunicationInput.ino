@@ -1,12 +1,14 @@
 //============ Neopixel Code
+#include "MUX74HC4067.h"
+
 
 #include <Adafruit_NeoPixel.h>
-#ifdef __AVR__
-#include <avr/power.h> // Required for 16 MHz Adafruit Trinket
-#endif
+//#ifdef __AVR__
+//#include <avr/power.h> // Required for 16 MHz Adafruit Trinket
+//#endif
 
 // Arduino Output Pin for Neopixels
-#define NEOPIXELPIN 2
+#define NEOPIXELPIN 4
 
 // Number of Neopixels
 #define NUMPIXELS 14
@@ -17,7 +19,6 @@ int ledBrightness = 100;
 
 //============
 
-#include "MUX74HC4067.h"
 
 // Creates a MUX74HC4067 instance
 // 1st argument is the Arduino PIN to which the EN pin connects
@@ -27,20 +28,8 @@ int ledBrightness = 100;
 MUX74HC4067 mux(8, A0, A1, A2, A3);
 MUX74HC4067 mux2(26, A8, A9, A10, A11);
 
-byte dataMux;
-byte dataMux2;
-
-//============ Side Buttons Code
-
-//int enablePwrLed = 41;
-//int enableModeLed = 43;
-//int enableDemoLed = ;
-
-//H-bridge Pins
-//int inputModeLed1 = 4;
-//int inputModeLed2 = 5;
-//int inputFeedbackLed1 = ;
-//int inputFeedbackLed2 = ;
+int dataMux;
+int dataMux2;
 
 //Button Pins
 int buttonModePin = 43;
@@ -63,7 +52,6 @@ void setup()
 {
   Serial.begin(9600);
   pixels.begin(); // INITIALIZE NeoPixel strip object
-  Serial.println("<Arduino2 is ready>");
 
   // Configures how the SIG pin will be interfaced
   // e.g. The SIG pin connects to a ANALOG input
@@ -87,7 +75,7 @@ void loop()
   readInputPieces();
   buttonState();
   modeSelector();
-  //sendToPi();
+  sendToPi();
 }
 
 
@@ -115,12 +103,17 @@ void readInputPieces() {
     else {
       boardPieceDetector[i + 1 + 16 - 8] = '1';
     }
+    /*
     Serial.print(i - 8 + 1);
     Serial.print(": ");
     Serial.println(dataMux); 
     Serial.print(i + 16 - 8 + 1);
     Serial.print(": ");
-    Serial.println(dataMux2); 
+    Serial.println(dataMux2); */
+     
+     //Serial.println((double)(dataMux) * 100 / 1023);
+    //Serial.println((double)(dataMux2) * 100 / 1023);
+
   }
   for (byte i = 0; i < 8; ++i)
   {
@@ -141,14 +134,15 @@ void readInputPieces() {
     else {
       boardPieceDetector[i + 1 + 16 + 8] = '1';
     }
+    /*
     Serial.print(i + 8 + 1);
     Serial.print(": ");
     Serial.println(dataMux); 
     Serial.print(i + 16 + 8 + 1);
     Serial.print(": ");
-    Serial.println(dataMux2); 
+    Serial.println(dataMux2);*/
   }
-  delay(200);
+  //delay(200);
 }
 
 void buttonState() {
@@ -202,11 +196,11 @@ void modeSelector() {
   if (currentButtonModeState == 0) {
     boardPieceDetector[0] = '0';
 
-  } else if (currentButtonModeState == 1) {
+  } else if (currentButtonModeState == 2) {
     boardPieceDetector[0] = '1';
 
 
-  } else if (currentButtonModeState == 2) {
+  } else if (currentButtonModeState == 1) {
 
     switch (currentButtonFeedbackState) {
       case 0:

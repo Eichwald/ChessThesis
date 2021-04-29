@@ -21,8 +21,7 @@ class App(threading.Thread):
       try:
          while True:
             self.gui.start()
-            print("looping")
-            #self.sc.read_loop()
+            self.sc.read_loop()
       except KeyboardInterrupt:
          self.sc.closeSer()
          print("Closing serial connections")

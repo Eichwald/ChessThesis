@@ -33,75 +33,75 @@ class BoardController():
 
         self.board_data = {
             Square.A1: None,
-            Square.A2: None,
-            Square.A3: None,
-            Square.A4: None,
-            Square.A5: None,
-            Square.A6: None,
-            Square.A7: None,
-            Square.A8: None,
-
             Square.B1: None,
-            Square.B2: None,
-            Square.B3: None,
-            Square.B4: None,
-            Square.B5: None,
-            Square.B6: None,
-            Square.B7: None,
-            Square.B8: None,
-
             Square.C1: None,
-            Square.C2: None,
-            Square.C3: None,
-            Square.C4: None,
-            Square.C5: None,
-            Square.C6: None,
-            Square.C7: None,
-            Square.C8: None,
-
             Square.D1: None,
-            Square.D2: None,
-            Square.D3: None,
-            Square.D4: None,
-            Square.D5: None,
-            Square.D6: None,
-            Square.D7: None,
-            Square.D8: None,
-
             Square.E1: None,
-            Square.E2: None,
-            Square.E3: None,
-            Square.E4: None,
-            Square.E5: None,
-            Square.E6: None,
-            Square.E7: None,
-            Square.E8: None,
-
             Square.F1: None,
-            Square.F2: None,
-            Square.F3: None,
-            Square.F4: None,
-            Square.F5: None,
-            Square.F6: None,
-            Square.F7: None,
-            Square.F8: None,
-
             Square.G1: None,
-            Square.G2: None,
-            Square.G3: None,
-            Square.G4: None,
-            Square.G5: None,
-            Square.G6: None,
-            Square.G7: None,
-            Square.G8: None,
-
             Square.H1: None,
+
+            Square.A2: None,
+            Square.B2: None,
+            Square.C2: None,
+            Square.D2: None,
+            Square.E2: None,
+            Square.F2: None,
+            Square.G2: None,
             Square.H2: None,
+
+            Square.A3: None,
+            Square.B3: None,
+            Square.C3: None,
+            Square.D3: None,
+            Square.E3: None,
+            Square.F3: None,
+            Square.G3: None,
             Square.H3: None,
+
+            Square.A4: None,
+            Square.B4: None,
+            Square.C4: None,
+            Square.D4: None,
+            Square.E4: None,
+            Square.F4: None,
+            Square.G4: None,
             Square.H4: None,
+
+            Square.A5: None,
+            Square.B5: None,
+            Square.C5: None,
+            Square.D5: None,
+            Square.E5: None,
+            Square.F5: None,
+            Square.G5: None,
             Square.H5: None,
+
+            Square.A6: None,
+            Square.B6: None,
+            Square.C6: None,
+            Square.D6: None,
+            Square.E6: None,
+            Square.F6: None,
+            Square.G6: None,
             Square.H6: None,
+
+            Square.A7: None,
+            Square.B7: None,
+            Square.C7: None,
+            Square.D7: None,
+            Square.E7: None,
+            Square.F7: None,
+            Square.G7: None,
             Square.H7: None,
+
+            Square.A8: None,
+            Square.B8: None,
+            Square.C8: None,
+            Square.D8: None,
+            Square.E8: None,
+            Square.F8: None,
+            Square.G8: None,
             Square.H8: None,
         }
 
@@ -290,7 +290,7 @@ class BoardController():
                 # Illegal move = no light & magnetic feedback push
                 elif led(square) is False and force(square) is Force.push:
                     led_string.append("3")
-            return f'<0{"".join(led_string)}>'
+            return f'{"".join(led_string)}'
             
         if onlyOnSqaure == None:
             for square in Square:
