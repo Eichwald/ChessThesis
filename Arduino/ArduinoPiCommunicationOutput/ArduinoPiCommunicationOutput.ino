@@ -15,7 +15,6 @@ const long fadingInterval = 10; //interval for fadingState
 unsigned long fadingStarted = 0;
 
 //============ Neopixel Code
-
 #include <Adafruit_NeoPixel.h>
 #ifdef __AVR__
 #include <avr/power.h> // Required for 16 MHz Adafruit Trinket
@@ -56,9 +55,9 @@ Adafruit_PWMServoDriver pwm12 = Adafruit_PWMServoDriver(0x4B);
 
 //Board Output Controllers.
 
-const byte numChars = 65;
+const char numChars = 65;
 //char boardPieceController[numChars];
-char boardPieceController[numChars] = {'1',
+char boardPieceController[numChars] = {'0',
 '0','0','0','0','0','0','0','0',
 '0','0','0','0','0','0','0','0',
 '0','0','0','0','0','0','0','0',
@@ -91,7 +90,6 @@ void setup() {
   pixels.begin(); // INITIALIZE NeoPixel strip object
 
   // tell the PC we are ready
-  Serial.println("<Arduino is ready>");
   
   for (byte n = 0; n < numPWMBoards; n++) {
     boardPWM[n].begin();
@@ -116,16 +114,20 @@ void loop() {
 
 
 void recvWithStartEndMarkers() {
-  static boolean recvInProgress = false;
-  static byte ndx = 0;
-  char startMarker = '<';
+  static boolean recvInProgress1 = false;
+  static boolean recvInProgress2 = false;
+  static char ndx = 0;
+  char startMarker1 = 'a';
+  char startMarker2 = 'b';
   char endMarker = '>';
   char rc;
 
   while (Serial.available() > 0 && newData == false) {
+    Serial.print(Serial.readString());
+    /*
     rc = Serial.read();
 
-    if (recvInProgress == true) {
+    if (recvInProgress1 == true) {
       if (rc != endMarker) {
         boardPieceController[ndx] = rc;
         ndx++;
@@ -135,15 +137,33 @@ void recvWithStartEndMarkers() {
       }
       else {
         boardPieceController[ndx] = '\0'; // terminate the string
-        recvInProgress = false;
+        recvInProgress1 = false;
         ndx = 0;
         newData = true;
       }
     }
-
-    else if (rc == startMarker) {
-      recvInProgress = true;
+    else if (rc == startMarker1) {
+      recvInProgress1 = true;
     }
+    if (recvInProgress2 == true) {
+      if (rc != endMarker) {
+        boardPieceController[ndx + 32] = rc;
+        ndx++;
+        if (ndx >= numChars) {
+          ndx = numChars - 1;
+        }
+      }
+      else {
+        boardPieceController[ndx + 32] = '\0'; // terminate the string
+        recvInProgress2 = false;
+        ndx = 0;
+        newData = true;
+      }
+    }
+    else if (rc == startMarker2) {
+      recvInProgress2 = true;
+    }
+    */
   }
 }
 
@@ -151,7 +171,7 @@ void recvWithStartEndMarkers() {
 
 void showNewData() {
   if (newData == true) {
-    Serial.print("This just in ... ");
+    //Serial.print("This just in ... ");
     Serial.println(boardPieceController);
 
     newData = false;
@@ -199,18 +219,15 @@ void updateBoard() {
 
 void updateLED() {
   
-
-
   for (int i = 0; i < NUMPIXELS / 2; i++) {
     if (boardPieceController[i + 1] == '1') {
       pixels.setPixelColor(i * 2, pixels.Color(ledBrightness, ledBrightness, ledBrightness)); //Multiply i with 2
              //Serial.println("in LED");
- 
-  }
+    }
     else {
       pixels.setPixelColor(i * 2, pixels.Color(100, 0, 0)); //Multiply i with 2
             //Serial.println("in LED: NO");
-          }
+    }
   }
 }
 
@@ -259,7 +276,6 @@ void turnOffVisual() {
 
   for (int i = 0; i < NUMPIXELS; i++) {
     pixels.setPixelColor(i, pixels.Color(0, 0, 0)); //Multiply i with 2
-    
   }
 }
 

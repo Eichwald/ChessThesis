@@ -31,6 +31,8 @@ class BoardController():
 
         self.board_selected_square = None
 
+        self.best_moves = []
+
         self.board_data = {
             Square.A1: None,
             Square.B1: None,
@@ -201,7 +203,7 @@ class BoardController():
         
 
     def board_clicked(self, square: Square):
-
+        self.stock_best_move()
         # if a piece is about to be placed
         if (self.selector_selected_piece != None and self.selector_selected_color != None):
             self.place(self.selector_selected_piece,
@@ -242,11 +244,12 @@ class BoardController():
         #self.controller.send_led_string('<00000000000000000000000000000000000000000000000000000000000000000>')
         self.clearForces()
 
+    def stock_best_move(self):
+        self.best_moves.append(self.stockfish.get_best_move())
+        print(self.best_moves)
+
     def applyForces(self, fromSquare: Square, onlyOnSqaure: Square = None):
         move_to_squares = self.available_moves(fromSquare)
-        best_moves = []
-        new_best_move = self.stockfish.get_best_move()
-        best_moves.append(new_best_move)
         led_string = []
         led_squares = []
 
@@ -267,9 +270,11 @@ class BoardController():
             # hvis modsat farve
             if toColor != None and toColor != fromColor:
                 return Force.neutral
-
-            if fromSquare.name.lower() + square.name.lower() in best_moves:
-                return Force.pull
+            if len(self.best_moves) > 0:
+                if fromSquare.name.lower() + square.name.lower() in self.best_moves[-1]:
+                    return Force.pull
+            else:
+                pass
 
             if fromColor != toColor:
                 return Force.push if square.name.lower() not in push_force_squares else Force.neutral
@@ -323,7 +328,7 @@ class BoardController():
             self.controller.setForce(square, Force.neutral)
             self.board.attackable(False, square)
             self.controller.setLed(square, False)
-
+        self.controller.send_led_string('0000000000000000000000000000000000000000000000000000000000000000')
 
     def clear(self, square: Square):
         self.board_data[square] = None

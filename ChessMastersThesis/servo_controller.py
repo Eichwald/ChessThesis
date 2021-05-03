@@ -16,8 +16,10 @@ class ServoController():
     serPort2 = "/dev/ttyUSB0"
     serPort3 = "/dev/ttyACM0"
     baudRate = 9600
+    
+    old_mode = 0
+    current_mode = 0
 
-    mode = 0
     try:
         ser = serial.Serial(serPort, baudRate)
         ser1 = serial.Serial(serPort2, baudRate)
@@ -40,10 +42,11 @@ class ServoController():
         index = 0
         read = self.read_input_arduino()
         read_list = re.findall(r'.', read)
-        self.mode = read_list[0]
-        if(len(read_list) > 65):
+        self.current_mode = read_list[0]
+        #if self.current_mode != self.old_mode:
+        #    self.send_led_string('0000000000000000000000000000000000000000000000000000000000000000')
+        if(len(read_list) > 65 or len(read_list) < 63):
             return
-        print(read_list)
         for square in self.squares:
             try:
                 index_read = read_list[index + 1]
@@ -54,16 +57,21 @@ class ServoController():
             if isNowOccupied != self.squares[square]["state"]["occupied"]:
                 self.squares[square]["state"]["occupied"] = isNowOccupied
                 if isNowOccupied is True:
-                    print("placing")
                     self.controller.board_placed_square(square)
                 else:
-                    print("lifting")
                     self.controller.board_lifted_square(square)
             else:
                 pass
-
-
         return
+
+    
+    def send_loop(self):
+        self.current_mode = 3
+        self.send_led_string('0000011100000111000001110000011100000111000001110000011100000111')
+        
+        return
+
+
             
     def setLed(self, square, attackable):
         return
@@ -88,7 +96,9 @@ class ServoController():
             self.squares[square]["servo"].ChangeDutyCycle(SOUTH)
 
     def send_led_string(self, send_string):
-        self.sendToArduino(f'<{self.mode}{send_string}>')
+        self.sendToArduino(f'a{self.current_mode}{send_string[0:32]}')
+        
+        self.sendToArduino(f'{send_string[32:]}>')
     # ======================================
 
     def sendToArduino(self, sendStr):

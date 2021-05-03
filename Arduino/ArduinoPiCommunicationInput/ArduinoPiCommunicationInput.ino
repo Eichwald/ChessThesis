@@ -46,7 +46,7 @@ boolean oldButtonFeedbackState = LOW;
 //============
 
 const byte numPieces = 33;
-char boardPieceDetector[numPieces] = {'1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'};
+char boardPieceDetector[numPieces] = {'0', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'};
 // 65 char boardPieceDetector[numPieces] = {'1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1'};
 void setup()
 {
@@ -196,10 +196,6 @@ void modeSelector() {
   if (currentButtonModeState == 0) {
     boardPieceDetector[0] = '0';
 
-  } else if (currentButtonModeState == 2) {
-    boardPieceDetector[0] = '1';
-
-
   } else if (currentButtonModeState == 1) {
 
     switch (currentButtonFeedbackState) {
@@ -218,6 +214,8 @@ void modeSelector() {
       default:
         break;
     }
+  } else if (currentButtonModeState == 2) {
+    boardPieceDetector[0] = '1';
   }
 }
 
