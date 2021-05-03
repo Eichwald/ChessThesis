@@ -80,7 +80,7 @@ void readInputPieces() {
       boardPieceDetector[i + 0] = '1';
     }
   }
-  
+ delay(200); 
 }
 
 void sendToPi() {

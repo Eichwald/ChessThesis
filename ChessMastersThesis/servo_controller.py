@@ -21,9 +21,9 @@ class ServoController():
     current_mode = 0
 
     try:
-        ser = serial.Serial(serPort, baudRate)
-        ser1 = serial.Serial(serPort2, baudRate)
-        ser2 = serial.Serial(serPort3, baudRate)
+        ser = serial.Serial(serPort, baudRate, timeout=1)
+        ser1 = serial.Serial(serPort2, baudRate, timeout=1)
+        ser2 = serial.Serial(serPort3, baudRate, timeout=1)
         print("Serial port 1 " + serPort + " opened  Baudrate " + str(baudRate))
         print("Serial port 2 " + serPort2 + " opened  Baudrate " + str(baudRate))
         print("Serial port 3 " + serPort3 + " opened  Baudrate " + str(baudRate))
@@ -40,18 +40,16 @@ class ServoController():
 
     def read_loop(self):
         index = 0
-        read = self.read_input_arduino()
-        read_list = re.findall(r'.', read)
+        try:
+            read = self.read_input_arduino()
+            read_list = re.findall(r'.', read)
+        except TypeError:
+            return
         self.current_mode = read_list[0]
-        #if self.current_mode != self.old_mode:
-        #    self.send_led_string('0000000000000000000000000000000000000000000000000000000000000000')
         if(len(read_list) > 65 or len(read_list) < 63):
             return
         for square in self.squares:
-            try:
-                index_read = read_list[index + 1]
-            except IndexError:
-                index_read = None
+            index_read = read_list[index + 1]
             index = index + 1
             isNowOccupied = True if index_read == '1' else False
             if isNowOccupied != self.squares[square]["state"]["occupied"]:
@@ -60,19 +58,9 @@ class ServoController():
                     self.controller.board_placed_square(square)
                 else:
                     self.controller.board_lifted_square(square)
-            else:
-                pass
         return
 
-    
-    def send_loop(self):
-        self.current_mode = 3
-        self.send_led_string('0000011100000111000001110000011100000111000001110000011100000111')
-        
-        return
-
-
-            
+           
     def setLed(self, square, attackable):
         return
         if attackable:
@@ -96,111 +84,24 @@ class ServoController():
             self.squares[square]["servo"].ChangeDutyCycle(SOUTH)
 
     def send_led_string(self, send_string):
-        self.sendToArduino(f'a{self.current_mode}{send_string[0:32]}')
-        
-        self.sendToArduino(f'{send_string[32:]}>')
+        self.sendToArduino(f'8{self.current_mode}{send_string}9')
+
     # ======================================
 
     def sendToArduino(self, sendStr):
         print(sendStr)
         self.ser.write(sendStr.encode('utf-8'))  # change for Python3
 
-    # ======================================
-
-    def recvFromArduino(self):
-
-        ck = ""
-        x = "z"  # any value that is not an end- or startMarker
-        byteCount = -1  # to allow for the fact that the last increment will be one too many
-
-        # wait for the start character
-        while ord(x) != self.startMarker:
-            x = self.ser.read()
-
-        # save data until the end marker is found
-        while ord(x) != self.endMarker:
-            if ord(x) != self.startMarker:
-                ck = ck + x.decode("utf-8")  # change for Python3
-                byteCount += 1
-            x = self.ser.read()
-        return(ck)
-
     def read_input_arduino(self):
-        first_part = self.recvFromArduino2()
-        second_part = self.recvFromArduino3()
-        return first_part + second_part
+        try:
+            first_part = self.ser1.readline().decode('utf-8').replace(">","").replace("<", "").replace("\r", "")
+            second_part = self.ser2.readline().decode('utf-8').replace(">","").replace("<", "").replace("\r", "")
+        except UnicodeDecodeError:
+            return
+        self.ser1.flush()
+        self.ser2.flush()
+        return f'{first_part}{second_part}'
 
-    def recvFromArduino2(self):
-
-        ck = ""
-        x = "z"  # any value that is not an end- or startMarker
-        byteCount = -1  # to allow for the fact that the last increment will be one too many
-
-        # wait for the start character
-        while ord(x) != self.startMarker:
-            x = self.ser1.read()
-
-        # save data until the end marker is found
-        while ord(x) != self.endMarker:
-            if ord(x) != self.startMarker:
-                ck = ck + x.decode("utf-8")  # change for Python3
-                byteCount += 1
-            x = self.ser1.read()
-        return(ck)
-
-    def recvFromArduino3(self):
-
-        ck = ""
-        x = "z"  # any value that is not an end- or startMarker
-        byteCount = -1  # to allow for the fact that the last increment will be one too many
-
-        # wait for the start character
-        while ord(x) != self.startMarker:
-            x = self.ser2.read()
-
-        # save data until the end marker is found
-        while ord(x) != self.endMarker:
-            if ord(x) != self.startMarker:
-                ck = ck + x.decode("utf-8")  # change for Python3
-                byteCount += 1
-            x = self.ser2.read()
-        return(ck)
-
-    # ============================
-
-    def waitForArduino(self):
-
-        # wait until the Arduino sends 'Arduino Ready' - allows time for Arduino reset
-        # it also ensures that any bytes left over from a previous message are discarded
-
-        msg = ""
-        while msg.find("Arduino is ready") == -1:
-
-            while self.ser.inWaiting() == 0:
-                pass
-
-            msg = self.recvFromArduino()
-
-            print(msg)  # python3 requires parenthesis
-            print()
-
-    def waitForArduino2(self):
-
-        # wait until the Arduino sends 'Arduino Ready' - allows time for Arduino reset
-        # it also ensures that any bytes left over from a previous message are discarded
-
-        msg = ""
-        while msg.find("Arduino2 is ready") == -1:
-
-            while self.ser1.inWaiting() == 0:
-                pass
-
-            msg = self.recvFromArduino2()
-
-            print(msg)  # python3 requires parenthesis
-            print()
-
-    # ======================================
 
     def closeSer(self):
         print("Closing serial connection")

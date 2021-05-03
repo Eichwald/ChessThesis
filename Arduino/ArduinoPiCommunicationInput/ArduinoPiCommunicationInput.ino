@@ -103,16 +103,6 @@ void readInputPieces() {
     else {
       boardPieceDetector[i + 1 + 16 - 8] = '1';
     }
-    /*
-    Serial.print(i - 8 + 1);
-    Serial.print(": ");
-    Serial.println(dataMux); 
-    Serial.print(i + 16 - 8 + 1);
-    Serial.print(": ");
-    Serial.println(dataMux2); */
-     
-     //Serial.println((double)(dataMux) * 100 / 1023);
-    //Serial.println((double)(dataMux2) * 100 / 1023);
 
   }
   for (byte i = 0; i < 8; ++i)
@@ -134,15 +124,9 @@ void readInputPieces() {
     else {
       boardPieceDetector[i + 1 + 16 + 8] = '1';
     }
-    /*
-    Serial.print(i + 8 + 1);
-    Serial.print(": ");
-    Serial.println(dataMux); 
-    Serial.print(i + 16 + 8 + 1);
-    Serial.print(": ");
-    Serial.println(dataMux2);*/
+   
   }
-  //delay(200);
+  delay(200);
 }
 
 void buttonState() {

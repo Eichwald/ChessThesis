@@ -18,11 +18,11 @@ class App(threading.Thread):
       threading.Thread.__init__(self)
       self.start()
       time.sleep(5)
+      print("HAMMER TIME!")
       try:
          while True:
-            self.gui.start()
+            # self.gui.start()
             self.sc.read_loop()
-            #self.sc.send_loop()
       except KeyboardInterrupt:
          self.sc.closeSer()
          print("Closing serial connections")

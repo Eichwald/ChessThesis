@@ -16,9 +16,7 @@ unsigned long fadingStarted = 0;
 
 //============ Neopixel Code
 #include <Adafruit_NeoPixel.h>
-#ifdef __AVR__
-#include <avr/power.h> // Required for 16 MHz Adafruit Trinket
-#endif
+
 
 // Arduino Output Pin for Neopixels
 #define NEOPIXELPIN 2
@@ -29,11 +27,6 @@ unsigned long fadingStarted = 0;
 Adafruit_NeoPixel pixels(NUMPIXELS, NEOPIXELPIN, NEO_GRB + NEO_KHZ800);
 
 int ledBrightness = 100;
-
-
-//============= Communication Code
-
-
 
 //============= PWM Shield Code
 
@@ -55,33 +48,24 @@ Adafruit_PWMServoDriver pwm12 = Adafruit_PWMServoDriver(0x4B);
 
 //Board Output Controllers.
 
-const char numChars = 65;
-//char boardPieceController[numChars];
-char boardPieceController[numChars] = {'0',
-'0','0','0','0','0','0','0','0',
-'0','0','0','0','0','0','0','0',
-'0','0','0','0','0','0','0','0',
-'0','0','0','0','0','0','0','0',
-'0','0','0','0','0','0','0','0',
-'0','0','0','0','0','0','0','0',
-'0','0','0','0','0','0','0','0',
-'0','0','0','0','0','0','0','0'};
-
-/*
-'2','2','2','2','2','2','2','2',
-'2','2','2','2','2','2','2','2',
-'2','2','2','2','2','2','2','2',
-'2','2','2','2','2','2','2','2',
-'2','2','2','2','2','2','2','2',
-'2','2','2','2','2','2','2','2',
-'2','2','2','2','2','2','2','2',
-'2','2','2','2','2','2','2','2'};
-*/
-
+const int numChars = 65;
+char receivedChars[numChars];
 boolean newData = false;
+//char boardPieceController[numChars];
+char boardPieceController[numChars] = {
+  '0',
+  '0','0','0','0','0','0','0','0',
+  '0','0','0','0','0','0','0','0',
+  '0','0','0','0','0','0','0','0',
+  '0','0','0','0','0','0','0','0',
+  '0','0','0','0','0','0','0','0',
+  '0','0','0','0','0','0','0','0',
+  '0','0','0','0','0','0','0','0',
+  '0','0','0','0','0','0','0','0'};
 
 const byte numPWMBoards = 12;
-Adafruit_PWMServoDriver boardPWM[numPWMBoards] = {pwm1, pwm2, pwm3, pwm4, pwm5, pwm6, pwm7, pwm8, pwm9, pwm10, pwm11, pwm12};
+Adafruit_PWMServoDriver boardPWM[numPWMBoards] = {
+  pwm1, pwm2, pwm3, pwm4, pwm5, pwm6, pwm7, pwm8, pwm9, pwm10, pwm11, pwm12};
 
 //=============
 
@@ -89,94 +73,42 @@ void setup() {
   Serial.begin(9600);
   pixels.begin(); // INITIALIZE NeoPixel strip object
 
-  // tell the PC we are ready
-  
+
   for (byte n = 0; n < numPWMBoards; n++) {
     boardPWM[n].begin();
     boardPWM[n].setOscillatorFrequency(27000000);
     boardPWM[n].setPWMFreq(1600);
-    //Wire.setClock(400000);
   }
 }
 
 //=============
 
 void loop() {
-  recvWithStartEndMarkers();
-  showNewData();
+  communicateWithPi();
   updateBoard();
-  pixels.show();   // Send the updated pixel colors to the hardware.
-  //Serial.println(boardPieceController[50]);
+  pixels.show();
+  delay(50);
 }
 
 
-//=============
-
-
-void recvWithStartEndMarkers() {
-  static boolean recvInProgress1 = false;
-  static boolean recvInProgress2 = false;
-  static char ndx = 0;
-  char startMarker1 = 'a';
-  char startMarker2 = 'b';
-  char endMarker = '>';
-  char rc;
-
-  while (Serial.available() > 0 && newData == false) {
-    Serial.print(Serial.readString());
-    /*
-    rc = Serial.read();
-
-    if (recvInProgress1 == true) {
-      if (rc != endMarker) {
-        boardPieceController[ndx] = rc;
-        ndx++;
-        if (ndx >= numChars) {
-          ndx = numChars - 1;
-        }
-      }
-      else {
-        boardPieceController[ndx] = '\0'; // terminate the string
-        recvInProgress1 = false;
-        ndx = 0;
-        newData = true;
-      }
-    }
-    else if (rc == startMarker1) {
-      recvInProgress1 = true;
-    }
-    if (recvInProgress2 == true) {
-      if (rc != endMarker) {
-        boardPieceController[ndx + 32] = rc;
-        ndx++;
-        if (ndx >= numChars) {
-          ndx = numChars - 1;
-        }
-      }
-      else {
-        boardPieceController[ndx + 32] = '\0'; // terminate the string
-        recvInProgress2 = false;
-        ndx = 0;
-        newData = true;
-      }
-    }
-    else if (rc == startMarker2) {
-      recvInProgress2 = true;
-    }
-    */
-  }
+void communicateWithPi(){
+   while(Serial.available() > 0) {
+     delay(25);
+     String str = Serial.readStringUntil('9');;
+     int str_len = str.length() + 1; 
+     char new_char_arr[str_len];
+     
+     str.toCharArray(new_char_arr, str_len);
+     
+     if(new_char_arr[0] == '8'){
+       for (int i = 0; i  < 65; i++) {
+         boardPieceController[i] = new_char_arr[i + 1];
+       }
+     }
+     Serial.println(boardPieceController);
+   }
 }
 
-//=============
-
-void showNewData() {
-  if (newData == true) {
-    //Serial.print("This just in ... ");
-    Serial.println(boardPieceController);
-
-    newData = false;
-  }
-}
 
 //============
 
@@ -187,28 +119,27 @@ void updateBoard() {
     turnOffMagnet();
   }
 
-  if (boardPieceController[0] == '1') {//DemoMode :)
+  else if (boardPieceController[0] == '1') {//DemoMode :)
 
     demoMode();
   }
 
-  if (boardPieceController[0] == '2') {//No Visual or Magnetic Feedback.
+  else if (boardPieceController[0] == '2') {//No Visual or Magnetic Feedback.
 
     turnOffVisual();
     turnOffMagnet();
   }
 
-  if (boardPieceController[0] == '3') {//Visual Feedback --> No Magnetic Feedback.
-
+  else if (boardPieceController[0] == '3') {//Visual Feedback --> No Magnetic Feedback.
     updateLED();
   }
 
-  if (boardPieceController[0] == '4') {//Magnetic Feedback --> No Visual Feedback.
+  else if (boardPieceController[0] == '4') {//Magnetic Feedback --> No Visual Feedback.
     turnOffVisual();
     updateMagnet();
   }
 
-  if (boardPieceController[0] == '5') {//Tænd magnetic og visual feedback
+  else if (boardPieceController[0] == '5') {//Tænd magnetic og visual feedback
     updateLED();
     updateMagnet();
 
@@ -218,15 +149,13 @@ void updateBoard() {
 //=============
 
 void updateLED() {
-  
+
   for (int i = 0; i < NUMPIXELS / 2; i++) {
     if (boardPieceController[i + 1] == '1') {
       pixels.setPixelColor(i * 2, pixels.Color(ledBrightness, ledBrightness, ledBrightness)); //Multiply i with 2
-             //Serial.println("in LED");
     }
     else {
-      pixels.setPixelColor(i * 2, pixels.Color(100, 0, 0)); //Multiply i with 2
-            //Serial.println("in LED: NO");
+      pixels.setPixelColor(i * 2, pixels.Color(0, 0, 0)); //Multiply i with 2
     }
   }
 }
@@ -280,6 +209,7 @@ void turnOffVisual() {
 }
 
 void turnOffMagnet() {
+  
   for (int i = 0; i < 12; i++) {
     boardPWM[i].setPWM(0, 0, 0);
     boardPWM[i].setPWM(1, 0, 0);
@@ -326,7 +256,7 @@ void demoMode() {
   pixels.setPixelColor(26*2, pixels.Color(ledBrightness, ledBrightness, ledBrightness));
 
   unsigned long currentMillis = millis();
-  
+
   if (currentMillis - vibrationStarted >= interval) {
     vibrationStarted = currentMillis;
 
@@ -371,13 +301,13 @@ void demoMode() {
   boardPWM[7].setPWM(1, 0, 2860);
 
   //Demo Piece 7 --> Field 30 --> clicking slowly
-  
+
   if (currentMillis - clickingStarted >= clickingInterval) {
     clickingStarted = currentMillis;
 
     if (clickingState == 0) {
       clickingState = 4095;
-    
+
     } 
     else {
       clickingState = 0;
@@ -413,3 +343,5 @@ void demoMode() {
   boardPWM[7].setPWM(7, 0, fadingState);
 
 }
+
+

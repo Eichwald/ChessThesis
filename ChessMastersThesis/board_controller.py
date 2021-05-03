@@ -185,25 +185,19 @@ class BoardController():
             return
 
         new_evaluation = self.stockfish.get_evaluation()
+        self.stock_best_move()
 
         # check for blunders
         if abs(evaluation['value'] - new_evaluation["value"]) > 100:
-        	print(new_evaluation)
-        	print("blunder")
-
+            print("blunder")
         # check for check-mate
         if new_evaluation['type'] is 'mate' and new_evaluation['value'] is 0:
-        	print(new_evaluation)
-        	print("MATE")
-
+            print("check_mate")
         #check for mate in x moves
         if new_evaluation['type'] is 'mate' and new_evaluation['value'] < 4:
-        	print(new_evaluation)
-        	print("mate in" + new_evaluation["value"])
-        
+            print("mate in x")
 
     def board_clicked(self, square: Square):
-        self.stock_best_move()
         # if a piece is about to be placed
         if (self.selector_selected_piece != None and self.selector_selected_color != None):
             self.place(self.selector_selected_piece,
@@ -226,7 +220,6 @@ class BoardController():
             self.board_selected_square = None
             if self.board_data[square] != None:
                 self.clearForces()
-                #self.controller.send_led_string('<00000000000000000000000000000000000000000000000000000000000000000>')
             return
 
         # if moving selection
@@ -235,17 +228,15 @@ class BoardController():
             self.board.mark(square)
             self.board_selected_square = square
             self.clearForces()
-            #self.controller.send_led_string('<00000000000000000000000000000000000000000000000000000000000000000>')
             return
 
         # if performing a move
         self.move(self.board_selected_square, square)
         self.board_selected_square = None
-        #self.controller.send_led_string('<00000000000000000000000000000000000000000000000000000000000000000>')
         self.clearForces()
 
     def stock_best_move(self):
-        self.best_moves.append(self.stockfish.get_best_move())
+        self.best_moves.append(self.stockfish.get_best_move_time(500))
         print(self.best_moves)
 
     def applyForces(self, fromSquare: Square, onlyOnSqaure: Square = None):
@@ -304,7 +295,6 @@ class BoardController():
                 self.board.attackable(led(square), square)
                 # self.controller.setLed(square, led(square))
             self.controller.send_led_string(send_string())
-            #self.controller.send_led_string('4333333333333333333333333333333333333333333333333333333333333333333333333')
         else:
             self.board.setForce(onlyOnSqaure, force(onlyOnSqaure))
             self.controller.setForce(onlyOnSqaure, force(onlyOnSqaure))
