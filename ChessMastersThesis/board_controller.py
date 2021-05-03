@@ -1,4 +1,5 @@
 import re
+import datetime
 from square import *
 from piece import *
 from color import *
@@ -20,7 +21,12 @@ class BoardController():
         })
         self.stockfish._start_new_game()
 
+        with open("game_history.txt", "a") as move_history_file:
+            move_history_file.write("\r\n\r\n New Game:")
+
         self.controller = controller
+
+        self.move_history = []
 
         self.engine = Engine()
         self.board = None
@@ -154,6 +160,8 @@ class BoardController():
         from_string = fromSquare.name.lower()
         full_string = f'{from_string}{to_string}'
         evaluation = self.stockfish.get_evaluation()
+
+        self.move_history.append(full_string)
         if self.stockfish.is_move_correct(full_string) is True:
             self.stockfish.makeMove(full_string)
             occupied, color, piece = self.get(fromSquare)
@@ -196,6 +204,9 @@ class BoardController():
         #check for mate in x moves
         if new_evaluation['type'] is 'mate' and new_evaluation['value'] < 4:
             print("mate in x")
+
+
+        self.insert_new_move_to_his(full_string)
 
     def board_clicked(self, square: Square):
         # if a piece is about to be placed
@@ -312,13 +323,20 @@ class BoardController():
                 test.append(full_string)
         return test
 
+    def insert_new_move_to_his(self, move_string):
+        with open("game_history.txt", "a") as move_history_file:
+            move_history_file.write(" ")
+            move_history_file.write(move_string)
+
+    
+
     def clearForces(self):
         for square in Square:
             self.board.setForce(square, Force.neutral)
             self.controller.setForce(square, Force.neutral)
             self.board.attackable(False, square)
             self.controller.setLed(square, False)
-        self.controller.send_led_string('0000000000000000000000000000000000000000000000000000000000000000')
+        self.controller.send_led_string('00000000000000000000000000000000000000000000000000000000000000000')
 
     def clear(self, square: Square):
         self.board_data[square] = None

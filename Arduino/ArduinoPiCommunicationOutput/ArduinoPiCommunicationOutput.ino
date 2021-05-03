@@ -3,15 +3,15 @@ int vibrationState2 = 0; //Negative vibrationState
 
 unsigned long vibrationStarted = 0;
 
-const long interval = 10; //interval for vibrations
+const long interval = 0.1; //interval for vibrations
 
 int clickingState = 0;
-const long clickingInterval = 100; //Interval for clicking
+const long clickingInterval = 1; //Interval for clicking
 unsigned long clickingStarted = 0;
 
 
 int fadingState = 0;
-const long fadingInterval = 10; //interval for fadingState
+const long fadingInterval = 0.1; //interval for fadingState
 unsigned long fadingStarted = 0;
 
 //============ Neopixel Code
@@ -151,7 +151,7 @@ void updateBoard() {
 void updateLED() {
 
   for (int i = 0; i < NUMPIXELS / 2; i++) {
-    if (boardPieceController[i + 1] == '1') {
+    if (boardPieceController[i + 1] == '1' || boardPieceController[i + 1] == '2') {
       pixels.setPixelColor(i * 2, pixels.Color(ledBrightness, ledBrightness, ledBrightness)); //Multiply i with 2
     }
     else {

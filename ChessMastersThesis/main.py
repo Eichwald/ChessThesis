@@ -21,7 +21,7 @@ class App(threading.Thread):
       print("HAMMER TIME!")
       try:
          while True:
-            # self.gui.start()
+            self.gui.start()
             self.sc.read_loop()
       except KeyboardInterrupt:
          self.sc.closeSer()
