@@ -12,8 +12,8 @@ class BoardController():
 
     def __init__(self, controller):
 
-        self.stockfish = Stockfish(depth=3, parameters={
-            "Write Debug Log": True,
+        self.stockfish = Stockfish(depth=2, parameters={
+            "Write Debug Log": False,
             "Threads": self._recommended_threads(),
             "Skill Level": 20,
             "Minimum Thinking Time": 0,
@@ -158,17 +158,15 @@ class BoardController():
     def move(self, fromSquare: Square, toSquare: Square):
         to_string = toSquare.name.lower()
         from_string = fromSquare.name.lower()
-        full_string = f'{from_string}{to_string}'
         evaluation = self.stockfish.get_evaluation()
 
-        self.move_history.append(full_string)
-        if self.stockfish.is_move_correct(full_string) is True:
-            self.stockfish.makeMove(full_string)
+        if self.stock_validate_move(from_string, to_string) is True:
+            self.stockfish.makeMove(f'{from_string}{to_string}')
             occupied, color, piece = self.get(fromSquare)
             self.board.demark(fromSquare)
             self.clear(fromSquare)
             self.place(piece, color, toSquare)
-
+            
             # handling castle on GUI
             if "e1" in from_string or "e8" in from_string:
                 if "c1" in to_string:
@@ -199,14 +197,18 @@ class BoardController():
         if abs(evaluation['value'] - new_evaluation["value"]) > 100:
             print("blunder")
         # check for check-mate
-        if new_evaluation['type'] is 'mate' and new_evaluation['value'] is 0:
-            print("check_mate")
-        #check for mate in x moves
-        if new_evaluation['type'] is 'mate' and new_evaluation['value'] < 4:
-            print("mate in x")
+        if 'mate' in new_evaluation['type']:
+            if new_evaluation['value'] is 0:
+                print("check_mate")
+            elif new_evaluation['value'] < 4:
+                print(f'mate in {new_evaluation["value"]}')
+            else:
+                return
 
+        self.insert_new_move_to_his(f'{from_string}{to_string}')
+        return
 
-        self.insert_new_move_to_his(full_string)
+    
 
     def board_clicked(self, square: Square):
         # if a piece is about to be placed
@@ -247,7 +249,7 @@ class BoardController():
         self.clearForces()
 
     def stock_best_move(self):
-        self.best_moves.append(self.stockfish.get_best_move_time(500))
+        self.best_moves.append(self.stockfish.get_best_move_time(1000))
         print(self.best_moves)
 
     def applyForces(self, fromSquare: Square, onlyOnSqaure: Square = None):
@@ -263,8 +265,6 @@ class BoardController():
 
         def force(square):
             push_force_squares = []
-            for moves in move_to_squares:
-                push_force_squares.append(re.findall(r'..', moves)[1])
 
             pull_square = fromSquare.name.lower() + square.name.lower()
             fromColor = self.getColor(fromSquare)
@@ -279,7 +279,7 @@ class BoardController():
                 pass
 
             if fromColor != toColor:
-                return Force.push if square.name.lower() not in push_force_squares else Force.neutral
+                return Force.push if square.name.lower() not in led_squares else Force.neutral
             else:
                 return Force.neutral
 
@@ -314,21 +314,22 @@ class BoardController():
             self.controller.send_led_string(send_string())
 
     def available_moves(self, square: Square):
-        test = []
+        available_moves_list = []
         for to_square in self.board_data:
-            to_string = to_square.name.lower()
-            from_string = square.name.lower()
-            full_string = f'{from_string}{to_string}'
+            full_string = f'{square.name.lower()}{to_square.name.lower()}'
             if self.stockfish.is_move_correct(full_string) is True:
-                test.append(full_string)
-        return test
+                available_moves_list.append(full_string)
+        return available_moves_list
 
     def insert_new_move_to_his(self, move_string):
         with open("game_history.txt", "a") as move_history_file:
             move_history_file.write(" ")
             move_history_file.write(move_string)
 
-    
+    def stock_validate_move(self, fromSqare, toSquare):
+        full_string = f'{fromSqare}{toSquare}'
+        return self.stockfish.is_move_correct(full_string)
+
 
     def clearForces(self):
         for square in Square:
@@ -336,7 +337,7 @@ class BoardController():
             self.controller.setForce(square, Force.neutral)
             self.board.attackable(False, square)
             self.controller.setLed(square, False)
-        self.controller.send_led_string('00000000000000000000000000000000000000000000000000000000000000000')
+        self.controller.send_led_string('0000000000000000000000000000000000000000000000000000000000000000')
 
     def clear(self, square: Square):
         self.board_data[square] = None

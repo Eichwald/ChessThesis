@@ -58,8 +58,8 @@ class ServoController():
                     self.controller.board_placed_square(square)
                 else:
                     self.controller.board_lifted_square(square)
+        self.old_mode = self.current_mode
         return
-
            
     def setLed(self, square, attackable):
         return
@@ -75,13 +75,6 @@ class ServoController():
             return
 
         self.squares[square]["state"]["force"] = force
-
-        if force == Force.neutral:
-            self.squares[square]["servo"].ChangeDutyCycle(MID)
-        elif force == Force.pull:
-            self.squares[square]["servo"].ChangeDutyCycle(NORTH)
-        elif force == Force.push:
-            self.squares[square]["servo"].ChangeDutyCycle(SOUTH)
 
     def send_led_string(self, send_string):
         self.sendToArduino(f'8{self.current_mode}{send_string}9')

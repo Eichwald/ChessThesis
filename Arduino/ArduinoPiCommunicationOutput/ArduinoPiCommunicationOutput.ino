@@ -105,7 +105,6 @@ void communicateWithPi(){
          boardPieceController[i] = new_char_arr[i + 1];
        }
      }
-     Serial.println(boardPieceController);
    }
 }
 

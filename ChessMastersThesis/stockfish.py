@@ -5,7 +5,7 @@ import subprocess
 from typing import Any, List, Optional
 
 DEFAULT_STOCKFISH_PARAMS = {
-	"Write Debug Log": "true",
+	"Write Debug Log": "false",
 	"Contempt": 0,
 	"Min Split Depth": 0,
 	"Threads": 1,
