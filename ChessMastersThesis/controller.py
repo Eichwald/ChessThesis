@@ -15,10 +15,16 @@ class Controller():
 
         self.lifting = None
 
+        self.lifted_piece = False
+
         return
 
     def board_lifted_square(self, square: Square):
         occupied, color, piece = self.board.get(square)
+
+        if self.lifted_piece is True:
+            return
+
         if occupied == False:
             print("Error: lifted an unregistred piece from " + str(square))
             return
@@ -31,6 +37,7 @@ class Controller():
 
         print("lifting " + str(piece) + " of color " + str(color) + " from " + str(square))
         self._lift(color, piece, square)
+        self.lifted_piece = True
         return
 
     def board_placed_square(self, square: Square):
@@ -49,6 +56,7 @@ class Controller():
 
         # we are moving a piece    
         print("placed " + str(self.lifting["piece"]) + " on " + str(square))
+        self.lifted_piece = False
         self._place(square)
 
     def setForce(self, square, color):

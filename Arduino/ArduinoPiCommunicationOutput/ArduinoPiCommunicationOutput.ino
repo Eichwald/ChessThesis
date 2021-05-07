@@ -47,7 +47,6 @@ Adafruit_PWMServoDriver pwm11 = Adafruit_PWMServoDriver(0x4A);
 Adafruit_PWMServoDriver pwm12 = Adafruit_PWMServoDriver(0x4B);
 
 //Board Output Controllers.
-
 const int numChars = 65;
 char receivedChars[numChars];
 boolean newData = false;
@@ -73,7 +72,6 @@ void setup() {
   Serial.begin(9600);
   pixels.begin(); // INITIALIZE NeoPixel strip object
 
-
   for (byte n = 0; n < numPWMBoards; n++) {
     boardPWM[n].begin();
     boardPWM[n].setOscillatorFrequency(27000000);
@@ -84,10 +82,11 @@ void setup() {
 //=============
 
 void loop() {
+  
   communicateWithPi();
-  updateBoard();
+  updateBoard(); 
   pixels.show();
-  delay(50);
+  delay(125);
 }
 
 
@@ -181,8 +180,8 @@ void updateMagnet() {
       boardNumber3 = boardNumber1 + 1;
       pinNumber3 = ((i * 3) + 2) % 16;
     }
-
-    if (boardPieceController[i +1] == '2') { //Legal and Good Move. Attracts Magnet.
+    
+    if (boardPieceController[i + 1] == '2') { //Legal and Good Move. Attracts Magnet.
       boardPWM[boardNumber1].setPWM(pinNumber1, 0, 0);
       boardPWM[boardNumber2].setPWM(pinNumber2, 0, 4095);
       boardPWM[boardNumber3].setPWM(pinNumber3, 0, 4095);
@@ -190,6 +189,11 @@ void updateMagnet() {
     else if (boardPieceController[i + 1] == '3') {//Illegal nove --> Pushes Magnet away.
       boardPWM[boardNumber1].setPWM(pinNumber1, 0, 4095);
       boardPWM[boardNumber2].setPWM(pinNumber2, 0, 0);
+      boardPWM[boardNumber3].setPWM(pinNumber3, 0, 4095);
+    }
+    else if (boardPieceController[i + 1] == '4') { //Helding pieces to board
+      boardPWM[boardNumber1].setPWM(pinNumber1, 0, 0);
+      boardPWM[boardNumber2].setPWM(pinNumber2, 0, 4095);
       boardPWM[boardNumber3].setPWM(pinNumber3, 0, 4095);
     }
     else {

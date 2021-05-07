@@ -29,10 +29,7 @@ class App(threading.Thread):
 
    def run(self):
       print("running")
-
-
-      
-       
+   
 
 
 if __name__ == "__main__":

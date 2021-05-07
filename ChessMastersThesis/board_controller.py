@@ -119,35 +119,6 @@ class BoardController():
     def _recommended_memory(self):
         return virtual_memory().available/(2*1024*1024)
 
-
-    def selector_clicked(self, piece: Piece, color: Color):
-        if (self.selector == None): return
-
-        # if a square is marked on the board
-        if (self.board_selected_square != None):
-            self.board.demark(self.board_selected_square)
-            self.place(piece, color, self.board_selected_square)
-            self.board_selected_square = None
-            return
-
-        # if you mark another piece in the selector
-        if (self.selector_selected_piece != None and self.selector_selected_color != None):
-            self.selector.demark(self.selector_selected_piece,
-                                 self.selector_selected_color)
-
-        # demark if same selected again
-        if (self.selector_selected_piece == piece and self.selector_selected_color == color):
-            self.selector_selected_color = None
-            self.selector_selected_piece = None
-            self.selector.demark(self.selector_selected_piece,
-                                 self.selector_selected_color)
-
-            return
-
-        self.selector_selected_color = color
-        self.selector_selected_piece = piece
-        self.selector.mark(piece, color)
-
     # marking a piece on the board
     def mark(self, square: Square):
         self.board.mark(square)
@@ -249,7 +220,7 @@ class BoardController():
         self.clearForces()
 
     def stock_best_move(self):
-        self.best_moves.append(self.stockfish.get_best_move_time(1000))
+        self.best_moves.append(self.stockfish.get_best_move_time(500))
         print(self.best_moves)
 
     def applyForces(self, fromSquare: Square, onlyOnSqaure: Square = None):
@@ -271,7 +242,7 @@ class BoardController():
             toColor = self.getColor(square)
             # hvis modsat farve
             if toColor != None and toColor != fromColor:
-                return Force.neutral
+                return Force.pull
             if len(self.best_moves) > 0:
                 if fromSquare.name.lower() + square.name.lower() in self.best_moves[-1]:
                     return Force.pull
@@ -281,7 +252,7 @@ class BoardController():
             if fromColor != toColor:
                 return Force.push if square.name.lower() not in led_squares else Force.neutral
             else:
-                return Force.neutral
+                return Force.pull
 
         def send_string():
             for square in Square:
@@ -297,6 +268,9 @@ class BoardController():
                 # Illegal move = no light & magnetic feedback push
                 elif led(square) is False and force(square) is Force.push:
                     led_string.append("3")
+                # Piece on this field
+                elif led(square) is False and force(square) is Force.pull:
+                    led_string.append("4")
             return f'{"".join(led_string)}'
             
         if onlyOnSqaure == None:
@@ -400,6 +374,3 @@ class BoardController():
     def new_game(self):
         self.stockfish.set_position()
         self.stockfish._start_new_game()
-
-    def kill_stock(self):
-        self.stockfish.__del__()
