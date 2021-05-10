@@ -194,7 +194,7 @@ void updateMagnet() {
     else if (boardPieceController[i + 1] == '4') { //Helding pieces to board
       boardPWM[boardNumber1].setPWM(pinNumber1, 0, 0);
       boardPWM[boardNumber2].setPWM(pinNumber2, 0, 4095);
-      boardPWM[boardNumber3].setPWM(pinNumber3, 0, 4095);
+      boardPWM[boardNumber3].setPWM(pinNumber3, 0, 2650);
     }
     else {
       boardPWM[boardNumber1].setPWM(pinNumber1, 0, 0);
