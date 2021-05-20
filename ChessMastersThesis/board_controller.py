@@ -129,7 +129,6 @@ class BoardController():
     def move(self, fromSquare: Square, toSquare: Square):
         to_string = toSquare.name.lower()
         from_string = fromSquare.name.lower()
-        evaluation = self.stockfish.get_evaluation()
 
         if self.stock_validate_move(from_string, to_string) is True:
             self.stockfish.makeMove(f'{from_string}{to_string}')
@@ -156,27 +155,17 @@ class BoardController():
                     occupied, color, piece = self.get(Square.H8)
                     self.clear(Square.H8)
                     self.place(piece, color, Square.F8)
+                else:
+                    pass
+            self.insert_new_move_to_his(f'{from_string}{to_string}')
         else:
             print("not a valid move")
             self.board.demark(fromSquare)
-            return
+            pass
 
-        new_evaluation = self.stockfish.get_evaluation()
         self.stock_best_move()
 
-        # check for blunders
-        if abs(evaluation['value'] - new_evaluation["value"]) > 100:
-            print("blunder")
-        # check for check-mate
-        if 'mate' in new_evaluation['type']:
-            if new_evaluation['value'] is 0:
-                print("check_mate")
-            elif new_evaluation['value'] < 4:
-                print(f'mate in {new_evaluation["value"]}')
-            else:
-                return
-
-        self.insert_new_move_to_his(f'{from_string}{to_string}')
+        
         return
 
     
@@ -221,7 +210,6 @@ class BoardController():
 
     def stock_best_move(self):
         self.best_moves.append(self.stockfish.get_best_move_time(500))
-        print(self.best_moves)
 
     def applyForces(self, fromSquare: Square, onlyOnSqaure: Square = None):
         move_to_squares = self.available_moves(fromSquare)
@@ -235,9 +223,6 @@ class BoardController():
             return True if square.name.lower() in led_squares else False
 
         def force(square):
-            push_force_squares = []
-
-            pull_square = fromSquare.name.lower() + square.name.lower()
             fromColor = self.getColor(fromSquare)
             toColor = self.getColor(square)
             # hvis modsat farve
@@ -276,15 +261,11 @@ class BoardController():
         if onlyOnSqaure == None:
             for square in Square:
                 self.board.setForce(square, force(square))
-                self.controller.setForce(square, force(square))
                 self.board.attackable(led(square), square)
-                # self.controller.setLed(square, led(square))
             self.controller.send_led_string(send_string())
         else:
             self.board.setForce(onlyOnSqaure, force(onlyOnSqaure))
-            self.controller.setForce(onlyOnSqaure, force(onlyOnSqaure))
             self.board.attackable(led(onlyOnSqaure), onlyOnSqaure)
-            # self.controller.setLed(onlyOnSqaure, led(onlyOnSqaure))
             self.controller.send_led_string(send_string())
 
     def available_moves(self, square: Square):
@@ -308,9 +289,9 @@ class BoardController():
     def clearForces(self):
         for square in Square:
             self.board.setForce(square, Force.neutral)
-            self.controller.setForce(square, Force.neutral)
+            # self.controller.setForce(square, Force.neutral)
             self.board.attackable(False, square)
-            self.controller.setLed(square, False)
+            # self.controller.setLed(square, False)
         self.controller.send_led_string('0000000000000000000000000000000000000000000000000000000000000000')
 
     def clear(self, square: Square):

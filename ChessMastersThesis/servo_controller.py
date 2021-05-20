@@ -21,6 +21,7 @@ class ServoController():
     current_mode = 0
 
     try:
+
         ser = serial.Serial(serPort, baudRate, timeout=1)
         ser1 = serial.Serial(serPort2, baudRate, timeout=1)
         ser2 = serial.Serial(serPort3, baudRate, timeout=1)
@@ -29,7 +30,7 @@ class ServoController():
         print("Serial port 3 " + serPort3 + " opened  Baudrate " + str(baudRate))
 
     except KeyboardInterrupt:
-        closeSer()
+        self.closeSer()
 
     def __init__(self, c):
 
@@ -60,30 +61,14 @@ class ServoController():
                     self.controller.board_lifted_square(square)
         self.old_mode = self.current_mode
         return
-           
-    def setLed(self, square, attackable):
-        return
-        if attackable:
-            GPIO.output(self.squares[square]["pins"]["led"], GPIO.HIGH)
-        else:
-            GPIO.output(self.squares[square]["pins"]["led"], GPIO.LOW)
-
-    def setForce(self, square: Square, force: Force):
-        return
-        currentForce = self.squares[square]["state"]["force"]
-        if currentForce == force:
-            return
-
-        self.squares[square]["state"]["force"] = force
 
     def send_led_string(self, send_string):
         self.sendToArduino(f'8{self.current_mode}{send_string}9')
 
-    # ======================================
 
     def sendToArduino(self, sendStr):
         print(sendStr)
-        self.ser.write(sendStr.encode('utf-8'))  # change for Python3
+        self.ser.write(sendStr.encode('utf-8'))
 
     def read_input_arduino(self):
         try:
@@ -91,8 +76,6 @@ class ServoController():
             second_part = self.ser2.readline().decode('utf-8').replace(">","").replace("<", "").replace("\r", "")
         except UnicodeDecodeError:
             return
-        self.ser1.flush()
-        self.ser2.flush()
         return f'{first_part}{second_part}'
 
 

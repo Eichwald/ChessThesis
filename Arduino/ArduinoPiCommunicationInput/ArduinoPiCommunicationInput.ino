@@ -46,7 +46,8 @@ boolean oldButtonFeedbackState = LOW;
 //============
 
 const byte numPieces = 33;
-char boardPieceDetector[numPieces] = {'0', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'};
+char boardPieceDetector[numPieces] = {
+  '0', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'};
 // 65 char boardPieceDetector[numPieces] = {'1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1'};
 void setup()
 {
@@ -124,7 +125,7 @@ void readInputPieces() {
     else {
       boardPieceDetector[i + 1 + 16 + 8] = '1';
     }
-   
+
   }
   delay(200);
 }
@@ -138,7 +139,8 @@ void buttonState() {
     if (buttonModeState == HIGH) {
       if (currentButtonModeState < 2) {
         currentButtonModeState ++;
-      } else {
+      } 
+      else {
         currentButtonModeState = 0;
       }
       delay(100);
@@ -149,7 +151,8 @@ void buttonState() {
     if (buttonFeedbackState == HIGH) {
       if (currentButtonFeedbackState < 3) {
         currentButtonFeedbackState ++;
-      } else {
+      } 
+      else {
         currentButtonFeedbackState = 0;
       }
       delay(100);
@@ -180,25 +183,27 @@ void modeSelector() {
   if (currentButtonModeState == 0) {
     boardPieceDetector[0] = '0';
 
-  } else if (currentButtonModeState == 1) {
+  } 
+  else if (currentButtonModeState == 1) {
 
     switch (currentButtonFeedbackState) {
-      case 0:
-        boardPieceDetector[0] = '2';
-        break;
-      case 1:
-        boardPieceDetector[0] = '3';
-        break;
-      case 2:
-        boardPieceDetector[0] = '4';
-        break;
-      case 3:
-        boardPieceDetector[0] = '5';
-        break;
-      default:
-        break;
+    case 0:
+      boardPieceDetector[0] = '2';
+      break;
+    case 1:
+      boardPieceDetector[0] = '3';
+      break;
+    case 2:
+      boardPieceDetector[0] = '4';
+      break;
+    case 3:
+      boardPieceDetector[0] = '5';
+      break;
+    default:
+      break;
     }
-  } else if (currentButtonModeState == 2) {
+  } 
+  else if (currentButtonModeState == 2) {
     boardPieceDetector[0] = '1';
   }
 }
@@ -210,3 +215,4 @@ void sendToPi() {
   }
   Serial.println(">");
 }
+

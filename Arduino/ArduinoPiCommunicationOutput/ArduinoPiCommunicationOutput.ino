@@ -47,7 +47,7 @@ Adafruit_PWMServoDriver pwm11 = Adafruit_PWMServoDriver(0x4A);
 Adafruit_PWMServoDriver pwm12 = Adafruit_PWMServoDriver(0x4B);
 
 //Board Output Controllers.
-const int numChars = 65;
+const char numChars = 65;
 char receivedChars[numChars];
 boolean newData = false;
 //char boardPieceController[numChars];
@@ -82,29 +82,29 @@ void setup() {
 //=============
 
 void loop() {
-  
+
   communicateWithPi();
   updateBoard(); 
   pixels.show();
-  delay(125);
+  delay(100);
 }
 
 
 void communicateWithPi(){
-   while(Serial.available() > 0) {
-     delay(25);
-     String str = Serial.readStringUntil('9');;
-     int str_len = str.length() + 1; 
-     char new_char_arr[str_len];
-     
-     str.toCharArray(new_char_arr, str_len);
-     
-     if(new_char_arr[0] == '8'){
-       for (int i = 0; i  < 65; i++) {
-         boardPieceController[i] = new_char_arr[i + 1];
-       }
-     }
-   }
+  while(Serial.available() > 0) {
+    delay(10);
+    String str = Serial.readStringUntil('9');
+    int str_len = str.length() + 1; 
+    char new_char_arr[str_len];
+    str.toCharArray(new_char_arr, str_len);
+    if (str.length() == 66) {
+      if(new_char_arr[0] == '8'){
+        for (int i = 0; i  < 65; i++) {
+          boardPieceController[i] = new_char_arr[i + 1];
+        }
+      }
+    }
+  }
 }
 
 
@@ -180,7 +180,7 @@ void updateMagnet() {
       boardNumber3 = boardNumber1 + 1;
       pinNumber3 = ((i * 3) + 2) % 16;
     }
-    
+
     if (boardPieceController[i + 1] == '2') { //Legal and Good Move. Attracts Magnet.
       boardPWM[boardNumber1].setPWM(pinNumber1, 0, 0);
       boardPWM[boardNumber2].setPWM(pinNumber2, 0, 4095);
@@ -212,7 +212,7 @@ void turnOffVisual() {
 }
 
 void turnOffMagnet() {
-  
+
   for (int i = 0; i < 12; i++) {
     boardPWM[i].setPWM(0, 0, 0);
     boardPWM[i].setPWM(1, 0, 0);
@@ -346,5 +346,7 @@ void demoMode() {
   boardPWM[7].setPWM(7, 0, fadingState);
 
 }
+
+
 
 

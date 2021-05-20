@@ -16,8 +16,9 @@ int dataMux2;
 
 //============
 
-const int numPieces = 32;
-char boardPieceDetector[numPieces] = {'0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1'};
+const byte numPieces = 32;
+char boardPieceDetector[numPieces] = {
+  '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1'};
 // 65 char boardPieceDetector[numPieces] = {'1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1'};
 void setup()
 {
@@ -27,13 +28,14 @@ void setup()
   // e.g. The SIG pin connects to a ANALOG input
   mux.signalPin(A4, INPUT, ANALOG);
   mux2.signalPin(A12, INPUT, ANALOG);
-  
+
 
 }
 
 void loop()
 {
   readInputPieces();
+  
   sendToPi();
 }
 
@@ -41,13 +43,13 @@ void readInputPieces() {
 
   int data;
   int data2;
-  
+
   for(byte i = 0; i < 8; i++){
-  
-      dataMux = mux.read(i);
-      dataMux2 = mux2.read(i);
-      
-      if (dataMux > 25) {
+
+    dataMux = mux.read(i);
+    dataMux2 = mux2.read(i);
+
+    if (dataMux > 25) {
       boardPieceDetector[i+16] = '0';
     }
     else {
@@ -62,11 +64,11 @@ void readInputPieces() {
     }
   }
   for(byte i = 8; i < 16; i++){
-  
-      dataMux = mux.read(i);
-      dataMux2 = mux2.read(i);
-      
-      if (dataMux > 25) {
+
+    dataMux = mux.read(i);
+    dataMux2 = mux2.read(i);
+
+    if (dataMux > 25) {
       boardPieceDetector[i+16] = '0';
     }
     else {
@@ -80,7 +82,7 @@ void readInputPieces() {
       boardPieceDetector[i + 0] = '1';
     }
   }
- delay(200); 
+  delay(200); 
 }
 
 void sendToPi() {
@@ -90,3 +92,4 @@ void sendToPi() {
   }
   Serial.println(">");
 }
+
