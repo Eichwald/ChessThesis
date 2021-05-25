@@ -3,15 +3,15 @@ int vibrationState2 = 0; //Negative vibrationState
 
 unsigned long vibrationStarted = 0;
 
-const long interval = 0.1; //interval for vibrations
+const long interval = 10; //interval for vibrations
 
 int clickingState = 0;
-const long clickingInterval = 1; //Interval for clicking
+const long clickingInterval = 100; //Interval for clicking
 unsigned long clickingStarted = 0;
 
 
 int fadingState = 0;
-const long fadingInterval = 0.1; //interval for fadingState
+const long fadingInterval = 10; //interval for fadingState
 unsigned long fadingStarted = 0;
 
 //============ Neopixel Code
@@ -86,7 +86,10 @@ void loop() {
   communicateWithPi();
   updateBoard(); 
   pixels.show();
-  delay(100);
+  if (boardPieceController[0] != '1') {
+    delay(100);
+  }
+
 }
 
 
@@ -97,11 +100,9 @@ void communicateWithPi(){
     int str_len = str.length() + 1; 
     char new_char_arr[str_len];
     str.toCharArray(new_char_arr, str_len);
-    if (str.length() == 66) {
-      if(new_char_arr[0] == '8'){
-        for (int i = 0; i  < 65; i++) {
-          boardPieceController[i] = new_char_arr[i + 1];
-        }
+    if(new_char_arr[0] == '8'){
+      for (int i = 0; i  < 65; i++) {
+        boardPieceController[i] = new_char_arr[i + 1];
       }
     }
   }
@@ -346,6 +347,8 @@ void demoMode() {
   boardPWM[7].setPWM(7, 0, fadingState);
 
 }
+
+
 
 
 

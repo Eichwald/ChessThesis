@@ -35,7 +35,6 @@ void setup()
 void loop()
 {
   readInputPieces();
-  
   sendToPi();
 }
 
