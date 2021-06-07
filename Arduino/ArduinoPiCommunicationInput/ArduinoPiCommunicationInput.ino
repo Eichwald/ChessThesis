@@ -45,7 +45,7 @@ boolean oldButtonFeedbackState = LOW;
 
 //============
 
-// Byte Array with length 33
+// Char Array with length 33
 const byte numPieces = 33;
 char boardPieceDetector[numPieces] = {
   '0', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'};
@@ -76,8 +76,8 @@ void loop()
 
   readInputPieces(); // Read the 32 squares on while half
   buttonState(); // Read button state
-  modeSelector(); //Updates first byte in bytearray to match buttonstate
-  sendToPi(); // Send bytearray to Raspberry
+  modeSelector(); //Updates first char in chararray to match buttonstate
+  sendToPi(); // Send chararray to Raspberry
 }
 
 
@@ -93,7 +93,7 @@ void readInputPieces() {
     dataMux2 = mux2.read(i);
     // If above 25 no piece on square
     // If below piece on square.
-    // Add 0 or 1 to index i to byte array
+    // Add 0 or 1 to index i to char array
     if (dataMux > 25) {
       boardPieceDetector[i + 1 - 8] = '0';
     }
@@ -185,7 +185,7 @@ void buttonLightControl(int buttonLightModeValue, int buttonLightFeedbackValue) 
 }
 
 void modeSelector() {
-  //Updates first index in bytearray to match game mode
+  //Updates first index in chararray to match game mode
   if (currentButtonModeState == 0) {
     boardPieceDetector[0] = '0';
 
@@ -215,7 +215,7 @@ void modeSelector() {
 }
 
 void sendToPi() {
-  // Sends the byte array to Raspberry.
+  // Sends the char array to Raspberry.
   Serial.print("<");
   for (int i = 0; i < 33; i++) {
     Serial.print(boardPieceDetector[i]);
