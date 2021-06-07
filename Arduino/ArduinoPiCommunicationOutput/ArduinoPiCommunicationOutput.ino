@@ -1,11 +1,11 @@
 int vibrationState = 0; //positive vibrationState
 int vibrationState2 = 0; //Negative vibrationState
 
-unsigned long vibrationStarted = 0;
+unsigned long vibrationStarted = 0; //Varible for millis
 
 const long interval = 10; //interval for vibrations
 
-int clickingState = 0;
+int clickingState = 0; 
 const long clickingInterval = 100; //Interval for clicking
 unsigned long clickingStarted = 0;
 
@@ -26,6 +26,7 @@ unsigned long fadingStarted = 0;
 
 Adafruit_NeoPixel pixels(NUMPIXELS, NEOPIXELPIN, NEO_GRB + NEO_KHZ800);
 
+// Turn down NeoPixel brightness
 int ledBrightness = 100;
 
 //============= PWM Shield Code
@@ -33,6 +34,7 @@ int ledBrightness = 100;
 #include <Wire.h>
 #include <Adafruit_PWMServoDriver.h>
 
+// Initiates the pwm boards. Based on indexing
 Adafruit_PWMServoDriver pwm1 = Adafruit_PWMServoDriver(0x40);
 Adafruit_PWMServoDriver pwm2 = Adafruit_PWMServoDriver(0x41);
 Adafruit_PWMServoDriver pwm3 = Adafruit_PWMServoDriver(0x42);
@@ -47,6 +49,7 @@ Adafruit_PWMServoDriver pwm11 = Adafruit_PWMServoDriver(0x4A);
 Adafruit_PWMServoDriver pwm12 = Adafruit_PWMServoDriver(0x4B);
 
 //Board Output Controllers.
+// Char array with length of 65
 const char numChars = 65;
 char receivedChars[numChars];
 boolean newData = false;
@@ -62,6 +65,7 @@ char boardPieceController[numChars] = {
   '0','0','0','0','0','0','0','0',
   '0','0','0','0','0','0','0','0'};
 
+// Array of pwm boards
 const byte numPWMBoards = 12;
 Adafruit_PWMServoDriver boardPWM[numPWMBoards] = {
   pwm1, pwm2, pwm3, pwm4, pwm5, pwm6, pwm7, pwm8, pwm9, pwm10, pwm11, pwm12};
@@ -71,7 +75,8 @@ Adafruit_PWMServoDriver boardPWM[numPWMBoards] = {
 void setup() {
   Serial.begin(9600);
   pixels.begin(); // INITIALIZE NeoPixel strip object
-
+  
+  // Begin PWM boads
   for (byte n = 0; n < numPWMBoards; n++) {
     boardPWM[n].begin();
     boardPWM[n].setOscillatorFrequency(27000000);
@@ -83,17 +88,21 @@ void setup() {
 
 void loop() {
 
-  communicateWithPi();
-  updateBoard(); 
-  pixels.show();
-  if (boardPieceController[0] != '1') {
-    delay(100);
+  communicateWithPi(); //Recieve data from Raspberry
+  updateBoard(); // Update board based on data from Raspberry
+  pixels.show(); // Update NeoPixels
+  if (boardPieceController[0] != '1') { //No daley in Demo Mode
+    delay(100); 
   }
 
 }
 
 
 void communicateWithPi(){
+  // Method for recieving data from Raspberry
+  // Reads stsring between letter 8 and letter 9
+  // Using numbers as identifiers for start and end
+  // Updates Char array based on input from Raspberry
   while(Serial.available() > 0) {
     delay(10);
     String str = Serial.readStringUntil('9');
@@ -112,7 +121,7 @@ void communicateWithPi(){
 //============
 
 void updateBoard() {
-
+  // Based on the first index - Game mode - choose what to update
   if (boardPieceController[0] == '0') {//No Visual or Magnetic Feedback.
     turnOffVisual();
     turnOffMagnet();
@@ -148,7 +157,7 @@ void updateBoard() {
 //=============
 
 void updateLED() {
-
+  // Choose color (or turned off) based on char array
   for (int i = 0; i < NUMPIXELS / 2; i++) {
     if (boardPieceController[i + 1] == '1' || boardPieceController[i + 1] == '2') {
       pixels.setPixelColor(i * 2, pixels.Color(ledBrightness, ledBrightness, ledBrightness)); //Multiply i with 2
@@ -163,7 +172,9 @@ void updateLED() {
 
 void updateMagnet() {
 
-
+  // Method for chooseing which pin is for which electromagnet.
+  // Each h bridge needs 3 pin one electromagnet
+  // Choses pin and board
   for (int i = 0; i < 64; i++) {
     int boardNumber1 = i * 3 / 16;
     int boardNumber2 = boardNumber1;
@@ -181,7 +192,7 @@ void updateMagnet() {
       boardNumber3 = boardNumber1 + 1;
       pinNumber3 = ((i * 3) + 2) % 16;
     }
-
+    // Sets PWM on the pins based on move
     if (boardPieceController[i + 1] == '2') { //Legal and Good Move. Attracts Magnet.
       boardPWM[boardNumber1].setPWM(pinNumber1, 0, 0);
       boardPWM[boardNumber2].setPWM(pinNumber2, 0, 4095);
@@ -206,14 +217,14 @@ void updateMagnet() {
 }
 
 void turnOffVisual() {
-
+  // turns of NeoPixel
   for (int i = 0; i < NUMPIXELS; i++) {
     pixels.setPixelColor(i, pixels.Color(0, 0, 0)); //Multiply i with 2
   }
 }
 
 void turnOffMagnet() {
-
+  // Turns off all electromagnets
   for (int i = 0; i < 12; i++) {
     boardPWM[i].setPWM(0, 0, 0);
     boardPWM[i].setPWM(1, 0, 0);
