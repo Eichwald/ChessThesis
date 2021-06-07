@@ -34,20 +34,22 @@ void setup()
 
 void loop()
 {
-  readInputPieces();
-  sendToPi();
+  readInputPieces(); // Reads 32 squares
+  sendToPi(); // sends char array to Raspberry
 }
 
 void readInputPieces() {
 
   int data;
   int data2;
-
+  // Iterates through all 32 squares using the Multiplexer board
   for(byte i = 0; i < 8; i++){
 
     dataMux = mux.read(i);
     dataMux2 = mux2.read(i);
-
+    // If reading above 25 no piece on square
+    // If below 25 piece on square
+    // Add 0 or 1 to char array based on reading
     if (dataMux > 25) {
       boardPieceDetector[i+16] = '0';
     }
@@ -85,6 +87,7 @@ void readInputPieces() {
 }
 
 void sendToPi() {
+  // Send char array to Raspberry
   Serial.print("<");
   for (int i = 0; i < 32; i++) {
     Serial.print(boardPieceDetector[i]);
