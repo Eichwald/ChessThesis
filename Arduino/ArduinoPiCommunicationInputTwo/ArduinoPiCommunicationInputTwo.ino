@@ -5,17 +5,17 @@
 // Creates a MUX74HC4067 instance
 // 1st argument is the Arduino PIN to which the EN pin connects
 // 2nd-5th arguments are the Arduino PINs to which the S0-S3 pins connect
-
-
 MUX74HC4067 mux(8, A0, A1, A2, A3);
 MUX74HC4067 mux2(26, A8, A9, A10, A11);
 
+// Variable for readings on squares
 int dataMux;
 int dataMux2;
 
 
 //============
 
+// Char array - one for each square
 const byte numPieces = 32;
 char boardPieceDetector[numPieces] = {
   '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1'};
