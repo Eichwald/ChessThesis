@@ -40,6 +40,7 @@ boolean buttonModeState = LOW;
 boolean buttonFeedbackState = LOW;
 int currentButtonModeState = 0;
 int currentButtonFeedbackState = 0;
+int resetState = 0;
 boolean oldButtonModeState = LOW;
 boolean oldButtonFeedbackState = LOW;
 
@@ -78,6 +79,7 @@ void loop()
   buttonState(); // Read button state
   modeSelector(); //Updates first char in chararray to match buttonstate
   sendToPi(); // Send chararray to Raspberry
+  resetState = 0;
 }
 
 
@@ -138,6 +140,10 @@ void buttonState() {
   buttonFeedbackState = digitalRead(buttonFeedbackPin);
   buttonModeState = digitalRead(buttonModePin);
   
+  if (buttonModeState == HIGH && buttonFeedbackState == HIGH) {
+     resetState = 1; 
+  }
+  
   // Counts up state if pushed - Game mode
   if (buttonModeState != oldButtonModeState) {
     if (buttonModeState == HIGH) {
@@ -186,7 +192,11 @@ void buttonLightControl(int buttonLightModeValue, int buttonLightFeedbackValue) 
 
 void modeSelector() {
   //Updates first index in chararray to match game mode
-  if (currentButtonModeState == 0) {
+  
+  if (resetState == 1) {
+    boardPieceDetector[0] = '6';
+  }
+  else if (currentButtonModeState == 0) {
     boardPieceDetector[0] = '0';
 
   } 

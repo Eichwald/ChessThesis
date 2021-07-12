@@ -2,7 +2,7 @@ from tkinter import *
 from square import *
 from piece import *
 from color import *
-from board import *
+from chessboard import *
 from piece_selector import *
 import json
 import random

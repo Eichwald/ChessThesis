@@ -26,16 +26,16 @@ class Controller():
             return
 
         if occupied == False:
-            print("Error: lifted an unregistred piece from " + str(square))
+            # print("Error: lifted an unregistred piece from " + str(square))
             return
 
         if self.lifting != None:
-            print("Lifted attacked piece from " + str(square))
+            # print("Lifted attacked piece from " + str(square))
             self.board.clear(square)
             self.board.applyForces(self.lifting["square"], square) # recalculate forces
             return
 
-        print("lifting " + str(piece) + " of color " + str(color) + " from " + str(square))
+        # print("lifting " + str(piece) + " of color " + str(color) + " from " + str(square))
         self._lift(color, piece, square)
         self.lifted_piece = True
         return
@@ -55,7 +55,7 @@ class Controller():
             return
 
         # we are moving a piece    
-        print("placed " + str(self.lifting["piece"]) + " on " + str(square))
+        # print("placed " + str(self.lifting["piece"]) + " on " + str(square))
         self.lifted_piece = False
         self._place(square)
 
@@ -84,5 +84,8 @@ class Controller():
 
     def read_input_arduino(self):
         return self.servo.read_input_arduino()
+
+    def new_game(self):
+        self.board.new_game()
 
    

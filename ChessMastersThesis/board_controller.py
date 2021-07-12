@@ -353,5 +353,42 @@ class BoardController():
         self.selector_selected_color = None
     
     def new_game(self):
+        print("reset")
+
+        self.clearAll()
+
+        white_pawnPos = [Square.A2, Square.B2, Square.C2, Square.D2, Square.E2, Square.F2, Square.G2, Square.H2]
+        black_pawnPos = [Square.A7, Square.B7, Square.C7, Square.D7, Square.E7, Square.F7, Square.G7, Square.H7]
+        white_rookPos = [Square.A1, Square.H1]
+        black_rookPos = [Square.A8, Square.H8]
+        white_bishPos = [Square.C1, Square.F1]
+        black_bishPos = [Square.C8, Square.F8]
+        white_knigPos = [Square.B1, Square.G1]
+        black_knigPos = [Square.B8, Square.G8]
+
+
+        for pos in white_pawnPos:
+            self.place(Piece.P, Color.white, pos)
+        for pos in black_pawnPos:
+            self.place(Piece.P, Color.black, pos)
+        for pos in white_rookPos:
+            self.place(Piece.R, Color.white, pos)
+        for pos in black_rookPos:
+            self.place(Piece.R, Color.black, pos)
+        for pos in white_bishPos:
+            self.place(Piece.B, Color.white, pos)
+        for pos in black_bishPos:
+            self.place(Piece.B, Color.black, pos)
+        for pos in white_knigPos:
+            self.place(Piece.N, Color.white, pos)
+        for pos in black_knigPos:
+            self.place(Piece.N, Color.black, pos)
+
+        self.place(Piece.K, Color.white, Square.E1)
+        self.place(Piece.K, Color.black, Square.E8)
+        
+        self.place(Piece.Q, Color.white, Square.D1)
+        self.place(Piece.Q, Color.black, Square.D8)
+
         self.stockfish.set_position()
         self.stockfish._start_new_game()
