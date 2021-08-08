@@ -82,6 +82,9 @@ class Controller():
 
         self.lifting = None
 
+    def start_new_game(self):
+        self.board.new_game()
+
     def read_input_arduino(self):
         return self.servo.read_input_arduino()
 

@@ -145,7 +145,7 @@ void buttonState() {
   }
   
   // Counts up state if pushed - Game mode
-  if (buttonModeState != oldButtonModeState) {
+  else if (buttonModeState != oldButtonModeState) {
     if (buttonModeState == HIGH) {
       if (currentButtonModeState < 2) {
         currentButtonModeState ++;
@@ -157,7 +157,7 @@ void buttonState() {
     }
   }
   // Counts up state if pushed - feedback
-  if (buttonFeedbackState != oldButtonFeedbackState) {
+  else if (buttonFeedbackState != oldButtonFeedbackState) {
     if (buttonFeedbackState == HIGH) {
       if (currentButtonFeedbackState < 3) {
         currentButtonFeedbackState ++;

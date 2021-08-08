@@ -47,10 +47,6 @@ class GUI:
       self.board.pack(side = TOP, fill = BOTH, expand = TRUE)
       board_controller.board = self.board
 
-      #self.pieceSelector = PieceSelector(self.window, board_controller)
-      #self.pieceSelector.pack(side = TOP, fill = BOTH, expand = TRUE)
-      #board_controller.selector = self.pieceSelector
-
       controls = Frame(self.window, bg = "gray")
       controls.pack(side = BOTTOM, fill = BOTH, expand = TRUE)
 
@@ -107,7 +103,7 @@ class GUI:
             self.board_controller.clear(e(square))
 
    def startPos(self): 
-      
+      print("GO TO startpos")
       self.board_controller.reset() 
 
       white_pawnPos = [Square.A2, Square.B2, Square.C2, Square.D2, Square.E2, Square.F2, Square.G2, Square.H2]

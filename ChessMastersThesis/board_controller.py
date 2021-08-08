@@ -1,5 +1,4 @@
 import re
-import datetime
 from square import *
 from piece import *
 from color import *
@@ -353,10 +352,8 @@ class BoardController():
         self.selector_selected_color = None
     
     def new_game(self):
-        print("reset")
-
+        
         self.clearAll()
-
         white_pawnPos = [Square.A2, Square.B2, Square.C2, Square.D2, Square.E2, Square.F2, Square.G2, Square.H2]
         black_pawnPos = [Square.A7, Square.B7, Square.C7, Square.D7, Square.E7, Square.F7, Square.G7, Square.H7]
         white_rookPos = [Square.A1, Square.H1]
